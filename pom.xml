@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>3.0</version>
+            <version>4.1.0</version>
         </dependency>
         <!-- Json -->
         <dependency>
@@ -60,7 +60,12 @@
             <artifactId>assertj-core</artifactId>
             <version>3.5.2</version>
         </dependency>
-
+        <!-- lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.10</version>
+        </dependency>
     </dependencies>
 
     <build>
