@@ -11,13 +11,13 @@ import static java.util.stream.Collectors.toMap;
 
 public class DescriptionParser {
 
-  private final String listDelimiter = ";";
+  private static final String LIST_DELIMITER = ";";
 
   public Description parse(String itemDescription) {
     Map<ItemProperty, String> properties = newArrayList(itemDescription.split(" ")).stream()
         .map(word -> Pair.of(tag(word), word))
         .collect(toMap(Pair::getKey, Pair::getValue,
-            (w1, w2) -> w1 + listDelimiter + w2, () -> Maps.newEnumMap(ItemProperty.class)));
+            (w1, w2) -> w1 + LIST_DELIMITER + w2, () -> Maps.newEnumMap(ItemProperty.class)));
     return new Description(itemDescription,
         properties.getOrDefault(ItemProperty.VENDOR, ""),
         properties.getOrDefault(ItemProperty.NAME, ""),
@@ -29,7 +29,7 @@ public class DescriptionParser {
     if (s.isEmpty()) {
       return newArrayList();
     }
-    return newArrayList(s.split(listDelimiter));
+    return newArrayList(s.split(LIST_DELIMITER));
   }
 
   private ItemProperty tag(String word) { //TODO replace with NER
