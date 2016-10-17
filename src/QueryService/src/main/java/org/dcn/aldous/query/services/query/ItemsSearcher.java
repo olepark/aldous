@@ -1,24 +1,25 @@
 package org.dcn.aldous.query.services.query;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.dcn.aldous.database.Item;
+import org.dcn.aldous.database.ItemsDAO;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
-public class ItemsRepository {
+public class ItemsSearcher {
 
-  private final Set<Item> items;
+  private final ItemsDAO items;
 
-  public ItemsRepository(Set<Item> items) {
+  public ItemsSearcher(ItemsDAO items) {
     this.items = items;
   }
 
   public List<Item> find(Description description) {
     DescriptionMatcher matcher = new DescriptionMatcher(description);
-    return items.stream()
+    return items.getAllItems().stream()
         .map(item -> Pair.of(item, matcher.rate(item)))
         .filter(p -> p.getValue() > 0)
         .sorted(Comparator.comparingInt(Pair::getValue))

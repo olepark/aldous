@@ -1,11 +1,10 @@
-package org.dcn.aldous.query.dependencies;
+package org.dcn.aldous.providers;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import org.dcn.aldous.query.services.query.Item;
-import org.dcn.aldous.query.services.query.ItemsRepository;
+import org.dcn.aldous.database.Item;
+import org.dcn.aldous.database.ItemsDAO;
 import org.jetbrains.annotations.NotNull;
-import org.mapdb.DB;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
 
@@ -14,18 +13,18 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-public class RepositoryProvider implements Provider<ItemsRepository> {
+public class ItemsDAOProvider implements Provider<ItemsDAO> {
 
-  private final DB db;
+  private final DBProvider dbProvider;
 
   @Inject
-  public RepositoryProvider(DB db) {
-    this.db = db;
+  public ItemsDAOProvider(DBProvider dbProvider) {
+    this.dbProvider = dbProvider;
   }
 
   @Override
-  public ItemsRepository get() {
-    return new ItemsRepository(db.hashSet("items", new ItemSerializer()).createOrOpen());
+  public ItemsDAO get() {
+    return new ItemsDAO(dbProvider.get().hashSet("items", new ItemSerializer()).createOrOpen());
   }
 
   private class ItemSerializer implements org.mapdb.Serializer<Item> {

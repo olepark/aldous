@@ -1,6 +1,7 @@
 package org.dcn.aldous.query.services.query;
 
 import com.google.inject.Inject;
+import org.dcn.aldous.database.Item;
 
 import java.util.List;
 
@@ -8,10 +9,10 @@ public class MatchingItemsService {
 
   private final DescriptionParser descriptionParser;
 
-  private final ItemsRepository repository;
+  private final ItemsSearcher repository;
 
   @Inject
-  public MatchingItemsService(DescriptionParser descriptionParser, ItemsRepository repository) {
+  public MatchingItemsService(DescriptionParser descriptionParser, ItemsSearcher repository) {
     this.descriptionParser = descriptionParser;
     this.repository = repository;
   }

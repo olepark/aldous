@@ -1,7 +1,7 @@
 package org.dcn.aldous.query.services.rest;
 
 import com.google.inject.Inject;
-import org.dcn.aldous.query.services.query.Item;
+import org.dcn.aldous.database.Item;
 import org.dcn.aldous.query.services.query.MatchingItemsService;
 
 import javax.ws.rs.GET;

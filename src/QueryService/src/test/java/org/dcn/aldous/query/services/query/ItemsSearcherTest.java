@@ -1,6 +1,7 @@
 package org.dcn.aldous.query.services.query;
 
-import org.assertj.core.api.Condition;
+import org.dcn.aldous.database.Item;
+import org.dcn.aldous.database.ItemsDAO;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,9 +12,9 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ItemsRepositoryTest {
+public class ItemsSearcherTest {
 
-  private ItemsRepository repository;
+  private ItemsSearcher repository;
 
   @Before
   public void setUp() {
@@ -23,7 +24,7 @@ public class ItemsRepositoryTest {
         new Item("003", "Apple", "Iphone 5", newArrayList(), newArrayList("smartphone"), newArrayList("4 inches")),
         new Item("004", "Bogatyr'", "Socks", newArrayList(), newArrayList("socks", "men's"), newArrayList("size 41"))
     );
-    repository = new ItemsRepository(items);
+    repository = new ItemsSearcher(new ItemsDAO(items));
   }
 
   @Test
