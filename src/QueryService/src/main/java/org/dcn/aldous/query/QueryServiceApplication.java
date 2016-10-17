@@ -1,30 +1,30 @@
-package org.dcn.aldous.app;
+package org.dcn.aldous.query;
 
 import io.dropwizard.Application;
 import io.dropwizard.Configuration;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.dcn.aldous.app.dependencies.PurchaseManagerModule;
-import org.dcn.aldous.app.services.rest.ManagerHealthCheck;
+import org.dcn.aldous.query.dependencies.QueryServiceModule;
+import org.dcn.aldous.query.services.rest.QueryServiceHealthCheck;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 
-public class PurchaseManagerServerApplication extends Application<Configuration> {
+public class QueryServiceApplication extends Application<Configuration> {
 
   @Override
   public void initialize(Bootstrap<Configuration> bootstrap) {
     GuiceBundle<Configuration> guiceBundle = GuiceBundle.builder()
-        .modules(new PurchaseManagerModule())
+        .modules(new QueryServiceModule())
         .build();
     bootstrap.addBundle(guiceBundle);
   }
 
   @Override
   public void run(Configuration configuration, Environment environment) throws Exception {
-    environment.jersey().packages("org.dcn.aldous.app.services.rest");
-    environment.healthChecks().register("app", new ManagerHealthCheck());
+    environment.jersey().packages("org.dcn.aldous.query.services.rest");
+    environment.healthChecks().register("query", new QueryServiceHealthCheck());
   }
 
   public static void main(String[] args) throws Exception {
-    new PurchaseManagerServerApplication().run(args);
+    new QueryServiceApplication().run(args);
   }
 }

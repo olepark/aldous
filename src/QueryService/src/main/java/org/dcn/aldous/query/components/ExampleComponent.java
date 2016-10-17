@@ -1,4 +1,4 @@
-package org.dcn.aldous.app.components;
+package org.dcn.aldous.query.components;
 
 import lombok.AllArgsConstructor;
 

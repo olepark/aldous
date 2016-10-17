@@ -1,12 +1,12 @@
-package org.dcn.aldous.app;
+package org.dcn.aldous.query;
 
 import com.google.common.io.Resources;
 
-public class PurchaseManagerApplicationRunner {
+public class QueryServiceApplicationRunner {
 
   public static void main(String[] args) throws Exception {
     String pathToRest = Resources.getResource("rest.yml").getPath();
-    PurchaseManagerServerApplication.main(new String[]{"server", pathToRest});
+    QueryServiceApplication.main(new String[]{"server", pathToRest});
   }
 
 }
