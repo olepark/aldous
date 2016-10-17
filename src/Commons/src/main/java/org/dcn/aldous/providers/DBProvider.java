@@ -17,7 +17,7 @@ class DBProvider implements Provider<DB> {
 
   @Override
   public DB get() {
-    return DBMaker.fileDB(config.getString("pathToDB") + "/aldous.db")
+    return DBMaker.fileDB(config.getString("pathToDB"))
         .closeOnJvmShutdown()
         .checksumStoreEnable()
         .make();
