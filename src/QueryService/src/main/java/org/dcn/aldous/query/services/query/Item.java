@@ -11,7 +11,11 @@ import java.util.List;
 @Data
 @Accessors(fluent = true)
 @Entity
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
+    creatorVisibility = JsonAutoDetect.Visibility.NONE,
+    isGetterVisibility = JsonAutoDetect.Visibility.NONE,
+    setterVisibility = JsonAutoDetect.Visibility.NONE,
+    getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class Item {
 
   @Column(name = "VENDOR_CODE")

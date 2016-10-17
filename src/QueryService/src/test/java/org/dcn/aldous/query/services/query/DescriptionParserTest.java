@@ -8,12 +8,12 @@ public class DescriptionParserTest {
 
   @Test
   public void testParse() {
-    Description description1 = new DescriptionParser().parse("Notebook Samsung 8GB");
+    Description description1 = new DescriptionParser().parse("notebook Samsung 8GB");
     assertThat(description1.tags()).contains("notebook");
-    assertThat(description1.properties()).containsExactly("8GB");
     assertThat(description1.vendor()).isEqualTo("Samsung");
+    assertThat(description1.properties()).containsExactly("8GB");
 
-    Description description2 = new DescriptionParser().parse("Red socks size 42");
+    Description description2 = new DescriptionParser().parse("red socks size 42");
     assertThat(description2.tags()).containsExactly("socks");
     assertThat(description2.properties()).contains("size 42", "red");
 
