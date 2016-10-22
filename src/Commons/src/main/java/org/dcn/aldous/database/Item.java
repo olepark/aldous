@@ -36,4 +36,8 @@ public class Item {
   @Column(name = "PROPERTIES")
   private final List<String> properties;
 
+  public String fullName() {
+    return vendor + name;
+  }
+
 }

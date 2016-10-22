@@ -9,7 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
+import java.util.Map;
 
 @Path("api/1.0/query")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,7 +24,7 @@ public class MatchingItemsRest {
 
   @GET
   @Path("getMatchingItems")
-  public List<Item> getMatchingItems(@QueryParam("query") String query) {
+  public Map<String, Item> getMatchingItems(@QueryParam("query") String query) {
     return service.getMatchingItems(query);
   }
 

@@ -4,6 +4,9 @@ import com.google.inject.Inject;
 import org.dcn.aldous.database.Item;
 
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toMap;
 
 public class MatchingItemsService {
 
@@ -17,8 +20,9 @@ public class MatchingItemsService {
     this.repository = repository;
   }
 
-  public List<Item> getMatchingItems(String itemDescription) {
+  public Map<String, Item> getMatchingItems(String itemDescription) {
     Description description = descriptionParser.parse(itemDescription);
-    return repository.find(description);
+    return repository.find(description).stream()
+        .collect(toMap(Item::name, item -> item));
   }
 }

@@ -10,17 +10,19 @@ import ru.vyarus.dropwizard.guice.GuiceBundle;
 
 public class QueryServiceApplication extends Application<Configuration> {
 
+  private static final String REST_PACKAGE = "org.dcn.aldous.query.services.rest";
+
   @Override
   public void initialize(Bootstrap<Configuration> bootstrap) {
     GuiceBundle<Configuration> guiceBundle = GuiceBundle.builder()
         .modules(new QueryServiceModule())
+        .enableAutoConfig(REST_PACKAGE)
         .build();
     bootstrap.addBundle(guiceBundle);
   }
 
   @Override
   public void run(Configuration configuration, Environment environment) throws Exception {
-    environment.jersey().packages("org.dcn.aldous.query.services.rest");
     environment.healthChecks().register("query", new QueryServiceHealthCheck());
   }
 

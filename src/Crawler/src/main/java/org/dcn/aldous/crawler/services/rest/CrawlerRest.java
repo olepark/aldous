@@ -1,8 +1,7 @@
 package org.dcn.aldous.crawler.services.rest;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.google.inject.Inject;
-import lombok.Data;
+import org.dcn.aldous.crawler.services.site.CrawlerResponse;
 import org.dcn.aldous.crawler.services.site.SitesCrawlerService;
 
 import javax.ws.rs.GET;
@@ -26,20 +25,16 @@ public class CrawlerRest {
   @Path("crawl")
   public CrawlerResponse crawl(@QueryParam("site") String siteUrl) {
     try {
-      crawlerService.startCrawling(siteUrl);
-      return new CrawlerResponse("Crawling started", 1);
+      return crawlerService.startCrawling(siteUrl);
     } catch (RuntimeException ex) {
       return new CrawlerResponse(ex.getMessage(), -1);
     }
   }
 
-  @Data
-  @JsonAutoDetect
-  private class CrawlerResponse {
-
-    private final String response;
-
-    private final Integer jobId;
-
+  @GET
+  @Path("info")
+  public CrawlerResponse info(@QueryParam("jobId") Integer id) {
+    return crawlerService.info(id);
   }
+
 }
