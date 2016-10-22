@@ -5,6 +5,7 @@ import org.dcn.aldous.database.ItemsDAO;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,7 +16,7 @@ public class SitesCrawlerService {
 
   private final ItemsDAO itemsDAO;
 
-  private final ExecutorService executorService;
+  private final Executor executor;
 
   private final Map<Integer, SiteCrawler> crawlerJobs;
 
@@ -43,7 +44,7 @@ public class SitesCrawlerService {
   }
 
   private void runAsync(SiteCrawler crawler) {
-    executorService.execute(() -> {
+    executor.execute(() -> {
       crawler.forEachRemaining(page -> {
         page.extractItems().forEach(itemsDAO::addItem);
       });
