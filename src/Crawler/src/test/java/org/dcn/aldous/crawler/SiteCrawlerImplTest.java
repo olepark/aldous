@@ -13,6 +13,7 @@ import static org.jsoup.helper.Validate.fail;
  * Created by alexey on 29.10.16.
  */
 public class SiteCrawlerImplTest {
+
     @Test
     public void crawlSiteTestWrongUrl(){
         SiteCrawlerImpl crawler = new SiteCrawlerImpl();
