@@ -1,10 +1,8 @@
 package org.dcn.aldous.crawler;
 
-import com.google.common.io.Resources;
-import org.dcn.aldous.crawler.services.site.SiteCrawlerImpl;
+import org.dcn.aldous.crawler.services.site.UlmartCrawler;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.jsoup.helper.Validate.fail;
@@ -12,11 +10,11 @@ import static org.jsoup.helper.Validate.fail;
 /**
  * Created by alexey on 29.10.16.
  */
-public class SiteCrawlerImplTest {
+public class UlmartCrawlerTest {
 
     @Test
     public void crawlSiteTestWrongUrl(){
-        SiteCrawlerImpl crawler = new SiteCrawlerImpl();
+        UlmartCrawler crawler = new UlmartCrawler();
         ArrayList <String> urlList = new ArrayList<>();
         urlList.add("insanePieceOfShit.com");
         try{
@@ -30,7 +28,7 @@ public class SiteCrawlerImplTest {
 
     @Test
     public void crawlSiteTestReturnList(){
-        SiteCrawlerImpl crawler = new SiteCrawlerImpl();
+        UlmartCrawler crawler = new UlmartCrawler();
         ArrayList <String> urlList = new ArrayList<>();
         urlList.add("https://www.ulmart.ru/catalog/server_mb?sort=5&viewType=2&rec=true");
         urlList.add("https://www.ulmart.ru/catalog/99862?sort=5&viewType=2&rec=true");

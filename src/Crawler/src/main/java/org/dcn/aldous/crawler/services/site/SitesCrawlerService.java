@@ -6,7 +6,6 @@ import org.dcn.aldous.database.ItemsDAO;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @AllArgsConstructor
@@ -22,7 +21,7 @@ public class SitesCrawlerService {
 
   private final AtomicInteger idGenerator;
 
-  /*public CrawlerResponse startCrawling(String siteUrl) {
+  public CrawlerResponse startCrawling(String siteUrl) {
     Optional<SiteCrawler> crawlerOptional = crawlerFactory.supply(siteUrl);
     if (!crawlerOptional.isPresent()) {
       return new CrawlerResponse("Site not covered: " + siteUrl, -1);
@@ -37,17 +36,12 @@ public class SitesCrawlerService {
 
   public CrawlerResponse info(Integer id) {
     if (crawlerJobs.containsKey(id)) {
-      //String currentPage = crawlerJobs.get(id).currentPage();
-      return new CrawlerResponse("Current page: " + currentPage, id);
+      return crawlerJobs.get(id).status();
     }
     return new CrawlerResponse("Crawler with that id not found", id);
   }
 
   private void runAsync(SiteCrawler crawler) {
-    executor.execute(() -> {
-      crawler.forEachRemaining(page -> {
-        page.extractItems().forEach(itemsDAO::addItem);
-      });
-    });
-  }*/
+    executor.execute(() -> crawler.extractItems().forEach(itemsDAO::addItem));
+  }
 }
