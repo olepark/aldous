@@ -21,7 +21,7 @@ public class CrawlerRest {
     this.crawlerService = crawlerService;
   }
 
-  @GET
+  /*@GET
   @Path("crawl")
   public CrawlerResponse crawl(@QueryParam("site") String siteUrl) {
     try {
@@ -35,6 +35,6 @@ public class CrawlerRest {
   @Path("info")
   public CrawlerResponse info(@QueryParam("jobId") Integer id) {
     return crawlerService.info(id);
-  }
+  }*/
 
 }

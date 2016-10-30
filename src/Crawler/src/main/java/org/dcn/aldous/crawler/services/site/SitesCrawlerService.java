@@ -22,7 +22,7 @@ public class SitesCrawlerService {
 
   private final AtomicInteger idGenerator;
 
-  public CrawlerResponse startCrawling(String siteUrl) {
+  /*public CrawlerResponse startCrawling(String siteUrl) {
     Optional<SiteCrawler> crawlerOptional = crawlerFactory.supply(siteUrl);
     if (!crawlerOptional.isPresent()) {
       return new CrawlerResponse("Site not covered: " + siteUrl, -1);
@@ -37,7 +37,7 @@ public class SitesCrawlerService {
 
   public CrawlerResponse info(Integer id) {
     if (crawlerJobs.containsKey(id)) {
-      String currentPage = crawlerJobs.get(id).currentPage();
+      //String currentPage = crawlerJobs.get(id).currentPage();
       return new CrawlerResponse("Current page: " + currentPage, id);
     }
     return new CrawlerResponse("Crawler with that id not found", id);
@@ -49,5 +49,5 @@ public class SitesCrawlerService {
         page.extractItems().forEach(itemsDAO::addItem);
       });
     });
-  }
+  }*/
 }
