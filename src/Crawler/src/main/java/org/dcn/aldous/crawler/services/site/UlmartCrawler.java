@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static com.google.common.collect.Lists.newArrayList;
-
 
 /**
  * Created by alexey on 29.10.16.
@@ -27,17 +25,11 @@ public class UlmartCrawler implements SiteCrawler {
 
   @Override
   public void extractAndConsume(Consumer<Item> itemConsumer) {
-    crawlSite(newArrayList(
-        "https://www.ulmart.ru/catalog/server_mb?sort=5&viewType=2&rec=true",
-        "https://www.ulmart.ru/catalog/99862?sort=5&viewType=2&rec=true",
-        "https://www.ulmart.ru/catalog/15021252?pageNum=1&pageSize=30&sort=5&viewType=2&rec=true"));
-    itemList.forEach(itemConsumer);
-    itemList.clear();
   }
 
   @Override
   public String status() {
-    return String.format("%s items extracted from %s", itemList.size(), ULMART);
+    return null;
   }
 
   public List<Item> getItemsList() {
@@ -70,6 +62,7 @@ public class UlmartCrawler implements SiteCrawler {
   private Item parseItemPage(String url) throws IOException {
     Document doc;
     List<String> propertiesComplete = new ArrayList<>();
+    List<String> itemUrl = new ArrayList<>();
 
     doc = Jsoup.connect(url).get();
 
@@ -90,7 +83,8 @@ public class UlmartCrawler implements SiteCrawler {
     }
     propertiesComplete.add("Price:" + price);
     propertiesComplete.add("Description:" + description.text());
+    itemUrl.add(url);
 
-    return new Item("default", vendorName, name, url, new ArrayList<>(), propertiesComplete);
+    return new Item("default", vendorName, name, itemUrl, null, propertiesComplete);
   }
 }
