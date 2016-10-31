@@ -1,5 +1,7 @@
 package org.dcn.aldous.crawler.services.site;
 
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.dcn.aldous.database.Item;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -8,22 +10,34 @@ import org.jsoup.nodes.Element;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
 
 
 /**
  * Created by alexey on 29.10.16.
  */
-public class UlmartCrawler {
+@Slf4j
+public class UlmartCrawler implements SiteCrawler {
 
   private static final String ULMART = "https://www.ulmart.ru";
 
   private List<Item> itemList = new ArrayList<>();
 
+  @Override
+  public void extractAndConsume(Consumer<Item> itemConsumer) {
+  }
+
+  @Override
+  public String status() {
+    return null;
+  }
+
   public List<Item> getItemsList() {
     return this.itemList;
   }
 
-  public void crawlSite(List<String> catalogueUrls) throws IOException {
+  @SneakyThrows(IOException.class)
+  public void crawlSite(List<String> catalogueUrls) {
     for (String catalogueUrl : catalogueUrls) {
       crawlCatalogue(catalogueUrl);
     }
@@ -33,8 +47,9 @@ public class UlmartCrawler {
     Document doc = Jsoup.connect(url + "&pageSize=1000").get();
     List<Element> elementsList = doc.select("[href~=/goods/?]");
     for (int i = 0; i < elementsList.size() / 2; i++) {
-      this.itemList.add(parseItemPage(this.ULMART + elementsList.get(i * 2).attr("href")));
-      System.out.println(this.itemList.get(i));
+      Item item = parseItemPage(this.ULMART + elementsList.get(i * 2).attr("href"));
+      this.itemList.add(item);
+      log.debug("Added item {}", item);
     }
   }
 

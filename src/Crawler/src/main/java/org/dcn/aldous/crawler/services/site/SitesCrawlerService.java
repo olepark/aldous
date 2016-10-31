@@ -36,12 +36,13 @@ public class SitesCrawlerService {
 
   public CrawlerResponse info(Integer id) {
     if (crawlerJobs.containsKey(id)) {
-      return crawlerJobs.get(id).status();
+      String status = crawlerJobs.get(id).status();
+      return new CrawlerResponse(status, id);
     }
     return new CrawlerResponse("Crawler with that id not found", id);
   }
 
   private void runAsync(SiteCrawler crawler) {
-    executor.execute(() -> crawler.extractItems().forEach(itemsDAO::addItem));
+    executor.execute(() -> crawler.extractAndConsume(itemsDAO::addItem));
   }
 }
