@@ -34,7 +34,7 @@ public class ItemsDAOProvider implements Provider<ItemsDAO> {
       dataOutput2.writeChars(item.vendorCode());
       dataOutput2.writeChars(item.vendor());
       dataOutput2.writeChars(item.name());
-      writeList(dataOutput2, item.urls());
+      dataOutput2.writeChars(item.url());
       writeList(dataOutput2, item.tags());
       writeList(dataOutput2, item.properties());
     }
@@ -51,10 +51,10 @@ public class ItemsDAOProvider implements Provider<ItemsDAO> {
       String code = dataInput2.readUTF();
       String vendor = dataInput2.readUTF();
       String name = dataInput2.readUTF();
-      List<String> urls = readList(dataInput2);
+      String url = dataInput2.readUTF();
       List<String> tags = readList(dataInput2);
       List<String> properties = readList(dataInput2);
-      return new Item(code, vendor, name, urls, tags, properties);
+      return new Item(code, vendor, name, url, tags, properties);
     }
 
     private List<String> readList(@NotNull DataInput2 dataInput2) throws IOException {

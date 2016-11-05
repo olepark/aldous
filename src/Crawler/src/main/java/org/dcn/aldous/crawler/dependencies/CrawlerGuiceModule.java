@@ -9,8 +9,10 @@ import org.dcn.aldous.crawler.services.site.SitesCrawlerService;
 import org.dcn.aldous.database.ItemsDAO;
 import org.dcn.aldous.providers.ConfigProvider;
 import org.dcn.aldous.providers.ItemsDAOProvider;
+import org.eclipse.jetty.util.thread.ExecutorThreadPool;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.google.common.collect.Maps.newHashMap;
@@ -26,7 +28,7 @@ public class CrawlerGuiceModule extends AbstractModule {
   @Provides
   @Singleton
   SitesCrawlerService sitesCrawlerService(ItemsDAO itemsDAO) {
-    QueuedThreadPool threadPool = new QueuedThreadPool();
+    ExecutorThreadPool threadPool = new ExecutorThreadPool(4, 100, 10, TimeUnit.SECONDS);
     return new SitesCrawlerService(new SiteCrawlerFactory(), itemsDAO, threadPool, newHashMap(), new AtomicInteger());
   }
 }

@@ -19,10 +19,10 @@ public class ItemsSearcherTest {
   @Before
   public void setUp() {
     Set<Item> items = newHashSet(
-        new Item("001", "Samsung", "Galaxy S5", newArrayList(), newArrayList("smartphone"), newArrayList("10 inches")),
-        new Item("002", "Apple", "Iphone 6", newArrayList(), newArrayList("smartphone"), newArrayList("5 inches")),
-        new Item("003", "Apple", "Iphone 5", newArrayList(), newArrayList("smartphone"), newArrayList("4 inches")),
-        new Item("004", "Bogatyr'", "Socks", newArrayList(), newArrayList("socks", "men's"), newArrayList("size 41"))
+        new Item("001", "Samsung", "Galaxy S5", "some-url", newArrayList("smartphone"), newArrayList("10 inches")),
+        new Item("002", "Apple", "Iphone 6", "some-url", newArrayList("smartphone"), newArrayList("5 inches")),
+        new Item("003", "Apple", "Iphone 5", "some-url", newArrayList("smartphone"), newArrayList("4 inches")),
+        new Item("004", "Bogatyr'", "Socks", "some-url", newArrayList("socks", "men's"), newArrayList("size 41"))
     );
     repository = new ItemsSearcher(new ItemsDAO(items));
   }

@@ -27,8 +27,8 @@ public class Item {
   @Column(name = "NAME")
   private final String name;
 
-  @Column(name = "URLS")
-  private final List<String> urls;
+  @Column(name = "URL")
+  private final String url;
 
   @Column(name = "TAGS")
   private final List<String> tags;
