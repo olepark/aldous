@@ -6,7 +6,7 @@ public class SiteCrawlerFactory {
 
   public Optional<SiteCrawler> supply(String url) {
     if (url.contains("ulmart")) {
-      return Optional.of(new UlmartCrawler());
+      return Optional.of(UlmartCrawler.getUlmartCrawler());
     } else {
       return Optional.empty();
     }

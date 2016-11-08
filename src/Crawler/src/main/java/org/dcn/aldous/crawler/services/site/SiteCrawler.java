@@ -8,6 +8,5 @@ import java.util.function.Consumer;
 public interface SiteCrawler {
 
   String status();
-
-  void extractAndConsume(Consumer<Item> itemConsumer);
+  void extractAndConsume(Consumer <Item> itemConsumer);
 }
