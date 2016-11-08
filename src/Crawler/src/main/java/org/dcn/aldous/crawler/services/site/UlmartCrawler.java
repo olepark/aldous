@@ -9,6 +9,7 @@ import org.dcn.aldous.database.Item;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
 import java.util.ArrayList;
 import java.io.IOException;
 import java.util.List;
@@ -21,8 +22,11 @@ import java.util.function.Consumer;
  */
 @Slf4j
 public class UlmartCrawler implements SiteCrawler {
+
   private static final String ULMART = "https://www.ulmart.ru";
+
   private Set<String> catalogueUrls;
+
   private Consumer<Item> itemConsumer;
 
   @Override
@@ -31,8 +35,8 @@ public class UlmartCrawler implements SiteCrawler {
   }
 
   @Override
-  public void extractAndConsume(Consumer <Item> itemConsumer) {
-      this.itemConsumer=itemConsumer;
+  public void extractAndConsume(Consumer<Item> itemConsumer) {
+    this.itemConsumer = itemConsumer;
     crawlSite();
   }
 
@@ -40,7 +44,7 @@ public class UlmartCrawler implements SiteCrawler {
     for (String catalogueUrl : catalogueUrls) {
       try {
         crawlCatalogue(catalogueUrl);
-      } catch (IOException exp){
+      } catch (IOException exp) {
         log.debug("This link doesn't exist: {}", catalogueUrl);
       }
     }
@@ -82,20 +86,21 @@ public class UlmartCrawler implements SiteCrawler {
     }
     propertiesComplete.add("Price:" + price);
     propertiesComplete.add("Description:" + description.text());
-      Item temp = new Item("default", vendorName, name, url, new ArrayList<>(), propertiesComplete);
-      log.debug("Extracted new item: {}", temp);
+    Item temp = new Item("default", vendorName, name, url, new ArrayList<>(), propertiesComplete);
+    log.debug("Extracted new item: {}", temp);
     itemConsumer.accept(temp);
   }
 
-  private UlmartCrawler(Set <String> urls){
-      this.catalogueUrls=urls;
+  private UlmartCrawler(Set<String> urls) {
+    this.catalogueUrls = urls;
   }
-  static public UlmartCrawler getUlmartCrawler(){
-      //hardcoded urls
-    Set <String> urls = Sets.newHashSet("https://www.ulmart.ru/catalog/15007481?sort=5&viewType=1&rec=true",
-            "https://www.ulmart.ru/catalog/996333333333333333333325?sort=5&viewType=1&rec=true",
-            "http://mxp.ulmart.ru/catalog/mxp_home?sort=5&viewType=1&rec=true",
-            "https://www.ulmart.ru/catalog/15010148?sort=5&viewType=1&rec=true");
+
+  static public UlmartCrawler getUlmartCrawler() {
+    //hardcoded urls
+    Set<String> urls = Sets.newHashSet("https://www.ulmart.ru/catalog/15007481?sort=5&viewType=1&rec=true",
+        "https://www.ulmart.ru/catalog/996333333333333333333325?sort=5&viewType=1&rec=true",
+        "http://mxp.ulmart.ru/catalog/mxp_home?sort=5&viewType=1&rec=true",
+        "https://www.ulmart.ru/catalog/15010148?sort=5&viewType=1&rec=true");
     return new UlmartCrawler(urls);
   }
 }
