@@ -3,10 +3,10 @@ package org.dcn.aldous.crawler.services.site;
 import org.dcn.aldous.database.Item;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface SiteCrawler {
 
-  CrawlerResponse status();
-
-  List<Item> extractItems();
+  String status();
+  void extractAndConsume(Consumer <Item> itemConsumer);
 }
