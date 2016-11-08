@@ -23,7 +23,9 @@ import java.util.function.Consumer;
 @Slf4j
 public class MVideoCrawler implements SiteCrawler {
     private static final String MVIDEO = "https://www.mvideo.ru";
+
     private Set<String> catalogueUrls;
+
     private Consumer<Item> itemConsumer;
 
     @Override
