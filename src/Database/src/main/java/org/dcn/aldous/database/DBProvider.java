@@ -1,4 +1,4 @@
-package org.dcn.aldous.providers;
+package org.dcn.aldous.database;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;

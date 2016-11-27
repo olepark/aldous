@@ -5,7 +5,7 @@ import com.google.inject.Singleton;
 import com.typesafe.config.Config;
 import org.dcn.aldous.database.ItemsDAO;
 import org.dcn.aldous.providers.ConfigProvider;
-import org.dcn.aldous.providers.ItemsDAOProvider;
+import org.dcn.aldous.database.ItemsDAOProvider;
 import org.dcn.aldous.query.services.query.DescriptionParser;
 import org.dcn.aldous.query.services.query.ItemsSearcher;
 

@@ -3,7 +3,6 @@ package org.dcn.aldous.query.services.query;
 import com.google.inject.Inject;
 import org.dcn.aldous.database.Item;
 
-import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;

@@ -1,9 +1,7 @@
-package org.dcn.aldous.providers;
+package org.dcn.aldous.database;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import org.dcn.aldous.database.Item;
-import org.dcn.aldous.database.ItemsDAO;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;

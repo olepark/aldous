@@ -1,8 +1,6 @@
 package org.dcn.aldous.crawler.services.site;
 
 import com.google.common.collect.Sets;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.dcn.aldous.database.Item;

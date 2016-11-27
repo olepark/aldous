@@ -12,6 +12,7 @@
         <module>src/Commons</module>
         <module>src/QueryService</module>
         <module>src/Crawler</module>
+        <module>src/Database</module>
     </modules>
 
     <dependencies>
