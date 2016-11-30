@@ -1,4 +1,4 @@
-package org.dcn.aldous.query.services.query;
+package org.dcn.aldous.database;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.tuple.Pair;

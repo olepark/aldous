@@ -1,4 +1,4 @@
-package org.dcn.aldous.query.services.query;
+package org.dcn.aldous.database;
 
 import java.util.Arrays;
 

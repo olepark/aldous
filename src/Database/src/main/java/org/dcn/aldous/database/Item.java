@@ -18,26 +18,31 @@ import java.util.List;
     getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class Item {
 
-  @Column(name = "VENDOR_CODE")
+  public static String TABLE = "items";
+
+  @Column(name = "vendor_code")
   private final String vendorCode;
 
-  @Column(name = "VENDOR")
+  @Column(name = "vendor")
   private final String vendor;
 
-  @Column(name = "NAME")
+  @Column(name = "name")
   private final String name;
 
-  @Column(name = "URLS")
-  private final List<String> urls;
+  @Column(name = "url")
+  private final String url;
 
-  @Column(name = "TAGS")
+  @Column(name = "price")
+  private final String price;
+
+  @Column(name = "tags")
   private final List<String> tags;
 
-  @Column(name = "PROPERTIES")
+  @Column(name = "properties")
   private final List<String> properties;
 
   public String fullName() {
-    return vendor + name;
+    return vendor + " " + name;
   }
 
 }

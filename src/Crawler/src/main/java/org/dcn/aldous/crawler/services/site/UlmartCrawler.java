@@ -1,5 +1,7 @@
 package org.dcn.aldous.crawler.services.site;
 
+import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
 import org.dcn.aldous.database.Item;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -8,33 +10,48 @@ import org.jsoup.nodes.Element;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 
 /**
  * Created by alexey on 29.10.16.
  */
-public class UlmartCrawler {
+@Slf4j
+public class UlmartCrawler implements SiteCrawler {
 
   private static final String ULMART = "https://www.ulmart.ru";
 
-  private List<Item> itemList = new ArrayList<>();
+  private final Subscription subscription = Subscription.create();
 
-  public List<Item> getItemsList() {
-    return this.itemList;
+  private Set<String> catalogueUrls;
+
+  @Override
+  public String status() {
+    return String.format("%s items extracted from %s", 42, ULMART);
   }
 
-  public void crawlSite(List<String> catalogueUrls) throws IOException {
+  @Override
+  public Subscription subscription() {
+    return subscription;
+  }
+
+  @Override
+  public void crawlSite() {
     for (String catalogueUrl : catalogueUrls) {
-      crawlCatalogue(catalogueUrl);
+      try {
+        crawlCatalogue(catalogueUrl);
+      } catch (IOException exp) {
+        log.debug("This link doesn't exist: {}", catalogueUrl);
+      }
     }
   }
 
   private void crawlCatalogue(String url) throws IOException {
-    Document doc = Jsoup.connect(url + "&pageSize=1000").get();
+    Document doc = Jsoup.connect(url + "&pageSize=10000").get();
     List<Element> elementsList = doc.select("[href~=/goods/?]");
     for (int i = 0; i < elementsList.size() / 2; i++) {
-      this.itemList.add(parseItemPage(this.ULMART + elementsList.get(i * 2).attr("href")));
-      System.out.println(this.itemList.get(i));
+      Item item = parseItemPage(this.ULMART + elementsList.get(i * 2).attr("href"));
+      subscription.broadcast(item);
     }
   }
 
@@ -47,7 +64,6 @@ public class UlmartCrawler {
   private Item parseItemPage(String url) throws IOException {
     Document doc;
     List<String> propertiesComplete = new ArrayList<>();
-    List<String> itemUrl = new ArrayList<>();
 
     doc = Jsoup.connect(url).get();
 
@@ -62,14 +78,25 @@ public class UlmartCrawler {
     String vendorName = getElementAttribute("'vendorName': '", data);
     String price = getElementAttribute("'productPrice': '", data);
 
-
     for (int i = 0; i < propertiesName.size(); i++) {
       propertiesComplete.add(propertiesName.get(i).text() + ":" + propertiesValue.get(i).text());
     }
-    propertiesComplete.add("Price:" + price);
     propertiesComplete.add("Description:" + description.text());
-    itemUrl.add(url);
+    Item item = new Item("default", vendorName, name, url, price, new ArrayList<>(), propertiesComplete);
+    log.debug("Extracted new item: {}", item);
+    return item;
+  }
 
-    return new Item("default", vendorName, name, itemUrl, null, propertiesComplete);
+  private UlmartCrawler(Set<String> urls) {
+    this.catalogueUrls = urls;
+  }
+
+  static public UlmartCrawler getUlmartCrawler() {
+    //hardcoded urls
+    Set<String> urls = Sets.newHashSet("https://www.ulmart.ru/catalog/15007481?sort=5&viewType=1&rec=true",
+        "https://www.ulmart.ru/catalog/996333333333333333333325?sort=5&viewType=1&rec=true",
+        "http://mxp.ulmart.ru/catalog/mxp_home?sort=5&viewType=1&rec=true",
+        "https://www.ulmart.ru/catalog/15010148?sort=5&viewType=1&rec=true");
+    return new UlmartCrawler(urls);
   }
 }

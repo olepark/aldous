@@ -5,7 +5,13 @@ import java.util.Optional;
 public class SiteCrawlerFactory {
 
   public Optional<SiteCrawler> supply(String url) {
-    return Optional.empty(); //TODO implement logic for getting crawler for specific site
+    if (url.contains("ulmart")) {
+      return Optional.of(UlmartCrawler.getUlmartCrawler());
+    } else if (url.contains("mvideo")) {
+      return Optional.of(MVideoCrawler.getMVideoCrawler());
+    } else {
+      return Optional.empty();
+    }
   }
 
 }

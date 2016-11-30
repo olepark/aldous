@@ -1,12 +1,10 @@
 package org.dcn.aldous.crawler.services.site;
 
-import org.dcn.aldous.database.Item;
-
-import java.util.List;
-
 public interface SiteCrawler {
 
-  CrawlerResponse status();
+  String status();
 
-  List<Item> extractItems();
+  Subscription subscription();
+
+  void crawlSite();
 }

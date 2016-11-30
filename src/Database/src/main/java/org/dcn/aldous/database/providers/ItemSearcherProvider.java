@@ -1,9 +1,10 @@
-package org.dcn.aldous.query.dependencies;
+package org.dcn.aldous.database.providers;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import org.dcn.aldous.database.DescriptionParser;
 import org.dcn.aldous.database.ItemsDAO;
-import org.dcn.aldous.query.services.query.ItemsSearcher;
+import org.dcn.aldous.database.ItemsSearcher;
 
 public class ItemSearcherProvider implements Provider<ItemsSearcher> {
 
@@ -16,6 +17,6 @@ public class ItemSearcherProvider implements Provider<ItemsSearcher> {
 
   @Override
   public ItemsSearcher get() {
-    return new ItemsSearcher(itemsDAO);
+    return new ItemsSearcher(new DescriptionParser(), itemsDAO);
   }
 }
