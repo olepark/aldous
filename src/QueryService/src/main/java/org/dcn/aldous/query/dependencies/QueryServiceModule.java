@@ -3,11 +3,10 @@ package org.dcn.aldous.query.dependencies;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.typesafe.config.Config;
-import org.dcn.aldous.database.ItemsDAO;
+import org.dcn.aldous.database.*;
+import org.dcn.aldous.database.providers.ItemSearcherProvider;
+import org.dcn.aldous.database.providers.ItemsDAOProvider;
 import org.dcn.aldous.providers.ConfigProvider;
-import org.dcn.aldous.database.ItemsDAOProvider;
-import org.dcn.aldous.query.services.query.DescriptionParser;
-import org.dcn.aldous.query.services.query.ItemsSearcher;
 
 public class QueryServiceModule extends AbstractModule {
 

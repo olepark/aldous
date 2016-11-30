@@ -15,6 +15,6 @@ public class MVideoCrawlerTest {
     public void crawlSiteTestWrongUrl(){
         MVideoCrawler crawler = MVideoCrawler.getMVideoCrawler();
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> crawler.extractAndConsume(Item::toString));
+                .isThrownBy(crawler::crawlSite);
     }
 }

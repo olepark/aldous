@@ -8,7 +8,7 @@ import org.dcn.aldous.crawler.services.site.SiteCrawlerFactory;
 import org.dcn.aldous.crawler.services.site.SitesCrawlerService;
 import org.dcn.aldous.database.ItemsDAO;
 import org.dcn.aldous.providers.ConfigProvider;
-import org.dcn.aldous.database.ItemsDAOProvider;
+import org.dcn.aldous.database.providers.ItemsDAOProvider;
 import org.eclipse.jetty.util.thread.ExecutorThreadPool;
 
 import java.util.concurrent.TimeUnit;

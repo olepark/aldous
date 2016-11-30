@@ -1,7 +1,6 @@
 package org.dcn.aldous.crawler.services.site;
 
 import com.google.common.collect.Sets;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.dcn.aldous.database.Item;
 import org.jsoup.Jsoup;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 
 /**
@@ -25,7 +23,7 @@ public class MVideoCrawler implements SiteCrawler {
 
   private Set<String> catalogueUrls;
 
-  private Consumer<Item> itemConsumer;
+  private final Subscription subscription = Subscription.create();
 
   @Override
   public String status() {
@@ -33,12 +31,11 @@ public class MVideoCrawler implements SiteCrawler {
   }
 
   @Override
-  @SneakyThrows
-  public void extractAndConsume(Consumer<Item> itemConsumer) {
-    this.itemConsumer = itemConsumer;
-    crawlSite();
+  public Subscription subscription() {
+    return subscription;
   }
 
+  @Override
   public void crawlSite() {
     for (String catalogueUrl : catalogueUrls) {
       try {
@@ -58,7 +55,8 @@ public class MVideoCrawler implements SiteCrawler {
       if (elementsList.isEmpty())
         break;
       for (int i = 0; i < elementsList.size(); i++) {
-        parseItemPage(this.MVIDEO + elementsList.get(i).select("[href~=/products/?]").attr("href"));
+        Item item = parseItemPage(this.MVIDEO + elementsList.get(i).select("[href~=/products/?]").attr("href"));
+        subscription.broadcast(item);
       }
       k++;
     }
@@ -70,7 +68,7 @@ public class MVideoCrawler implements SiteCrawler {
     return attribute;
   }
 
-  private void parseItemPage(String url) throws IOException {
+  private Item parseItemPage(String url) throws IOException {
     Document doc;
     List<String> propertiesComplete = new ArrayList<>();
 
@@ -85,14 +83,14 @@ public class MVideoCrawler implements SiteCrawler {
       propertiesComplete.add(params.substring(params.indexOf('"', i), params.indexOf(",", i)).replace('"', '\0'));
       i = params.indexOf(",", i) + 1;
     }
-    propertiesComplete.add("Price: " + getElementAttribute("\"price\": ", scriptText));
+    String price = getElementAttribute("\"price\": ", scriptText);
     propertiesComplete.add("Description: " + doc.getElementsByClass("pds-top-description").text());
     String vendorName = getElementAttribute("\'productVendorName\': ", scriptText).replace('\'', '\0');
     String name = getElementAttribute("\'productName\': ", scriptText).replace('\'', '\0');
 
-    Item temp = new Item("default", vendorName, name, url, new ArrayList<>(), propertiesComplete);
+    Item temp = new Item("default", vendorName, name, url, price, new ArrayList<>(), propertiesComplete);
     log.debug("Extracted new item: {}", temp);
-    itemConsumer.accept(temp);
+    return temp;
   }
 
   private MVideoCrawler(Set<String> urls) {

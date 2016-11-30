@@ -1,30 +1,34 @@
-package org.dcn.aldous.query.services.query;
+package org.dcn.aldous.database;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
-import org.dcn.aldous.database.Item;
-import org.dcn.aldous.database.ItemsDAO;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
+@AllArgsConstructor
 public class ItemsSearcher {
+
+  private final DescriptionParser descriptionParser;
 
   private final ItemsDAO items;
 
-  public ItemsSearcher(ItemsDAO items) {
-    this.items = items;
-  }
-
-  public List<Item> find(Description description) {
-    DescriptionMatcher matcher = new DescriptionMatcher(description);
-    return items.getAllItems().stream()
+  public List<Item> find(String description) {
+    DescriptionMatcher matcher = new DescriptionMatcher(descriptionParser.parse(description));
+    return items.getMatchingItems(description)
         .map(item -> Pair.of(item, matcher.rate(item)))
         .filter(p -> p.getValue() > 0)
-        .sorted(Comparator.comparingInt(Pair::getValue))
-        .map(Pair::getKey)
-        .collect(toList());
+        .toList()
+        .map(pairs -> pairs.stream()
+            .sorted(Comparator.comparing(Pair::getValue))
+            .map(Pair::getKey)
+            .collect(Collectors.toList()))
+        .toBlocking().first();
   }
 
   private class DescriptionMatcher {

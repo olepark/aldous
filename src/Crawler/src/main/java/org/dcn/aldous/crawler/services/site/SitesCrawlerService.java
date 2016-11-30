@@ -43,6 +43,10 @@ public class SitesCrawlerService {
   }
 
   private void runAsync(SiteCrawler crawler) {
-    executor.execute(() -> crawler.extractAndConsume(itemsDAO::addItem));
+    executor.execute(() -> {
+      Subscription subscription = crawler.subscription();
+      subscription.addSubscriber(itemsDAO::addItem);
+      crawler.crawlSite();
+    });
   }
 }

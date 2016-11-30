@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 
 /**
@@ -22,9 +21,9 @@ public class UlmartCrawler implements SiteCrawler {
 
   private static final String ULMART = "https://www.ulmart.ru";
 
-  private Set<String> catalogueUrls;
+  private final Subscription subscription = Subscription.create();
 
-  private Consumer<Item> itemConsumer;
+  private Set<String> catalogueUrls;
 
   @Override
   public String status() {
@@ -32,11 +31,11 @@ public class UlmartCrawler implements SiteCrawler {
   }
 
   @Override
-  public void extractAndConsume(Consumer<Item> itemConsumer) {
-    this.itemConsumer = itemConsumer;
-    crawlSite();
+  public Subscription subscription() {
+    return subscription;
   }
 
+  @Override
   public void crawlSite() {
     for (String catalogueUrl : catalogueUrls) {
       try {
@@ -51,7 +50,8 @@ public class UlmartCrawler implements SiteCrawler {
     Document doc = Jsoup.connect(url + "&pageSize=10000").get();
     List<Element> elementsList = doc.select("[href~=/goods/?]");
     for (int i = 0; i < elementsList.size() / 2; i++) {
-      parseItemPage(this.ULMART + elementsList.get(i * 2).attr("href"));
+      Item item = parseItemPage(this.ULMART + elementsList.get(i * 2).attr("href"));
+      subscription.broadcast(item);
     }
   }
 
@@ -61,7 +61,7 @@ public class UlmartCrawler implements SiteCrawler {
     return attribute;
   }
 
-  private void parseItemPage(String url) throws IOException {
+  private Item parseItemPage(String url) throws IOException {
     Document doc;
     List<String> propertiesComplete = new ArrayList<>();
 
@@ -81,11 +81,10 @@ public class UlmartCrawler implements SiteCrawler {
     for (int i = 0; i < propertiesName.size(); i++) {
       propertiesComplete.add(propertiesName.get(i).text() + ":" + propertiesValue.get(i).text());
     }
-    propertiesComplete.add("Price:" + price);
     propertiesComplete.add("Description:" + description.text());
-    Item temp = new Item("default", vendorName, name, url, new ArrayList<>(), propertiesComplete);
-    log.debug("Extracted new item: {}", temp);
-    itemConsumer.accept(temp);
+    Item item = new Item("default", vendorName, name, url, price, new ArrayList<>(), propertiesComplete);
+    log.debug("Extracted new item: {}", item);
+    return item;
   }
 
   private UlmartCrawler(Set<String> urls) {

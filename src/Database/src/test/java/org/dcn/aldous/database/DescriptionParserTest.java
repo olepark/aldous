@@ -1,5 +1,7 @@
-package org.dcn.aldous.query.services.query;
+package org.dcn.aldous.database;
 
+import org.dcn.aldous.database.Description;
+import org.dcn.aldous.database.DescriptionParser;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
