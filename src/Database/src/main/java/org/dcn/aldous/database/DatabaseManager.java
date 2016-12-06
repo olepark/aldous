@@ -68,7 +68,7 @@ public class DatabaseManager {
       System.out.println(columns.getString(4) + " " + columns.getString(6));
     }
     ItemsDAO itemsDAO = new ItemsDAO(Database.from(connection));
-    Observable<Item> matchingItems = itemsDAO.getMatchingItems("");
+    Observable<Item> matchingItems = itemsDAO.getMatchingItems("_");
     matchingItems.forEach(System.out::println);
   }
 

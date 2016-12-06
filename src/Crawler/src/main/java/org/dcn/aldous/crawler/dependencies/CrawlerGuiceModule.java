@@ -27,8 +27,12 @@ public class CrawlerGuiceModule extends AbstractModule {
 
   @Provides
   @Singleton
-  SitesCrawlerService sitesCrawlerService(ItemsDAO itemsDAO, SiteCrawlerFactory factory) {
+  SitesCrawlerService sitesCrawlerService(ItemsDAO itemsDAO, SiteCrawlerFactory factory, Config config) {
     ExecutorThreadPool threadPool = new ExecutorThreadPool(4, 100, 10, TimeUnit.SECONDS);
-    return new SitesCrawlerService(factory, itemsDAO, threadPool, newHashMap(), new AtomicInteger());
+    SitesCrawlerService service = new SitesCrawlerService(factory, itemsDAO, threadPool, newHashMap(), new AtomicInteger());
+    if (config.getBoolean("crawlAllOnStart")) {
+      service.crawlAll();
+    }
+    return service;
   }
 }

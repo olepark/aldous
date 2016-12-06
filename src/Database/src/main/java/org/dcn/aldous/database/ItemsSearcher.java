@@ -18,7 +18,7 @@ public class ItemsSearcher {
         .map(item -> Pair.of(item, matcher.rate(item)))
         .toList()
         .map(pairs -> pairs.stream()
-            .sorted(Comparator.comparing(Pair::getValue))
+            .sorted(Comparator.comparingDouble(Pair::getValue))
             .map(Pair::getKey)
             .collect(Collectors.toList()))
         .toBlocking().first();
@@ -35,23 +35,23 @@ public class ItemsSearcher {
     }
 
 
-    public int rate(Item item) {
-      int forName = compareString(item.name());
-      int forVendor = compareString(item.vendor());
-      int forProperties = compareList(item.properties());
-      int forTags = compareList(item.tags());
-      return forName + forVendor + forProperties + forTags;
+    public double rate(Item item) {
+      double forName = compareString(item.name());
+      double forVendor = compareString(item.vendor());
+//      int forProperties = compareList(item.properties());
+      double forTags = compareList(item.tags());
+      return forName + forVendor + forTags;
     }
 
-    private int compareList(List<String> itemList) {
+    private double compareList(List<String> itemList) {
       return itemList.stream()
-          .mapToInt(this::compareString)
+          .mapToDouble(this::compareString)
           .max()
           .orElse(-1 * description.length());
     }
 
-    private int compareString(String si) {
-      return si.length() - levenshteinDistance.apply(si, description);
+    private double compareString(String si) {
+      return (si.length() - levenshteinDistance.apply(si, description)) * 1.0 / si.length();
     }
   }
 }

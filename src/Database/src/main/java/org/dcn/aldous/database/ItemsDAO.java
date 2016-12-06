@@ -23,7 +23,8 @@ public class ItemsDAO {
 
   public void addItem(Item item) {
     int inserted = database
-        .update("insert into items(" + columnsString() + ") values(?, ?, ?, ?, ?, ?)")
+        .update("insert into items(" + columnsString() + ") values(?, ?, ?, ?, ?, ?) " +
+            "on conflict (url) do update set price=EXCLUDED.price, tags=EXCLUDED.tags, properties=EXCLUDED.properties")
         .parameter(item.vendor())
         .parameter(item.name())
         .parameter(item.url())
