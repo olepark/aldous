@@ -4,8 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.dcn.aldous.database.ItemsDAO;
 
-import static com.google.common.collect.Lists.newArrayList;
-
 public class ItemsDAOProvider implements Provider<ItemsDAO> {
 
   private final DBProvider dbProvider;

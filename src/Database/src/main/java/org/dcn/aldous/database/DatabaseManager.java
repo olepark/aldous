@@ -6,7 +6,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.typesafe.config.Config;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import org.dcn.aldous.database.providers.ItemsDAOProvider;
 import org.dcn.aldous.providers.ConfigProvider;
 import rx.Observable;
 
@@ -28,7 +27,7 @@ public class DatabaseManager {
   @SneakyThrows
   public void createTableItems() {
     Connection connection = connect();
-    String sql = format("create table %s(%s);", Item.TABLE, extractColumnNames());
+    String sql = format("create table %s(ID  SERIAL PRIMARY KEY, %s);", Item.TABLE, extractColumnNames());
     PreparedStatement statement = connection.prepareStatement(sql);
     statement.execute();
   }
@@ -83,9 +82,9 @@ public class DatabaseManager {
   private String sqlFieldType(Field f) {
     String typeName = f.getType().getName();
     if (typeName.equals(String.class.getName())) {
-      return "varchar(1023)";
+      return "TEXT";
     } else {
-      return "varchar(7500)";
+      return "TEXT";
     }
   }
 

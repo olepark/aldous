@@ -1,8 +1,9 @@
 package org.dcn.aldous.database;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @Accessors(fluent = true)
 @Entity
+@JsonSerialize
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
     creatorVisibility = JsonAutoDetect.Visibility.NONE,
     isGetterVisibility = JsonAutoDetect.Visibility.NONE,
@@ -20,8 +22,7 @@ public class Item {
 
   public static String TABLE = "items";
 
-  @Column(name = "vendor_code")
-  private final String vendorCode;
+  private final Integer id;
 
   @Column(name = "vendor")
   private final String vendor;

@@ -82,7 +82,7 @@ public class UlmartCrawler implements SiteCrawler {
       propertiesComplete.add(propertiesName.get(i).text() + ":" + propertiesValue.get(i).text());
     }
     propertiesComplete.add("Description:" + description.text());
-    Item item = new Item("default", vendorName, name, url, price, new ArrayList<>(), propertiesComplete);
+    Item item = new Item(null, vendorName, name, url, price, new ArrayList<>(), propertiesComplete);
     log.debug("Extracted new item: {}", item);
     return item;
   }

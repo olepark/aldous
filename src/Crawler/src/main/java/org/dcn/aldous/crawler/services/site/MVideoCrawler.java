@@ -88,7 +88,7 @@ public class MVideoCrawler implements SiteCrawler {
     String vendorName = getElementAttribute("\'productVendorName\': ", scriptText).replace('\'', '\0');
     String name = getElementAttribute("\'productName\': ", scriptText).replace('\'', '\0');
 
-    Item temp = new Item("default", vendorName, name, url, price, new ArrayList<>(), propertiesComplete);
+    Item temp = new Item(null, vendorName, name, url, price, new ArrayList<>(), propertiesComplete);
     log.debug("Extracted new item: {}", temp);
     return temp;
   }

@@ -4,11 +4,6 @@ import com.github.davidmoten.rx.jdbc.Database;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.typesafe.config.Config;
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
-
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 class DBProvider implements Provider<Database> {
 
