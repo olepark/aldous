@@ -25,9 +25,11 @@ public class UlmartCrawler implements SiteCrawler {
 
   private Set<String> catalogueUrls;
 
+  private int numberOfExtractredItems;
+
   @Override
   public String status() {
-    return String.format("%s items extracted from %s", 42, ULMART);
+    return String.format("%s items extracted from %s", numberOfExtractredItems, ULMART);
   }
 
   @Override
@@ -37,6 +39,7 @@ public class UlmartCrawler implements SiteCrawler {
 
   @Override
   public void crawlSite() {
+    this.numberOfExtractredItems = 0;
     for (String catalogueUrl : catalogueUrls) {
       try {
         crawlCatalogue(catalogueUrl);
@@ -84,19 +87,43 @@ public class UlmartCrawler implements SiteCrawler {
     propertiesComplete.add("Description:" + description.text());
     Item item = new Item(null, vendorName, name, url, price, new ArrayList<>(), propertiesComplete);
     log.debug("Extracted new item: {}", item);
+    this.numberOfExtractredItems++;
     return item;
   }
 
   private UlmartCrawler(Set<String> urls) {
     this.catalogueUrls = urls;
+    this.numberOfExtractredItems = 0;
   }
 
   static public UlmartCrawler getUlmartCrawler() {
     //hardcoded urls
-    Set<String> urls = Sets.newHashSet("https://www.ulmart.ru/catalog/15007481?sort=5&viewType=1&rec=true",
-        "https://www.ulmart.ru/catalog/996333333333333333333325?sort=5&viewType=1&rec=true",
-        "http://mxp.ulmart.ru/catalog/mxp_home?sort=5&viewType=1&rec=true",
-        "https://www.ulmart.ru/catalog/15010148?sort=5&viewType=1&rec=true");
+    Set<String> urls = Sets.newHashSet(
+            "https://www.ulmart.ru/catalog/15007481?sort=5&viewType=1&rec=true",
+            "http://mxp.ulmart.ru/catalog/mxp_home?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/15010148?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/mirror_camera?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/tvs?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/100227?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/soundbar?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/musical_center?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/game_consoles?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/brand_computers",
+            "https://www.ulmart.ru/catalog/notebooks?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/monobloks_pc?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/ipad_tablets?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/93276?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/monitors?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/97784?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/97783?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/93622?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/gamepads2?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/hardware",
+            "https://www.ulmart.ru/catalog/graphic_tablets?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/93211?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/93287?sort=5&viewType=1&rec=true",
+            "https://www.ulmart.ru/catalog/cigarettes?sort=5&viewType=1&rec=true"
+            );
     return new UlmartCrawler(urls);
   }
 }
