@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.Map;
 
 @Path("api/1.0/crawler")
 @Produces(MediaType.APPLICATION_JSON)
@@ -35,6 +36,12 @@ public class CrawlerRest {
   @Path("info")
   public CrawlerResponse info(@QueryParam("jobId") Integer id) {
     return crawlerService.info(id);
+  }
+
+  @GET
+  @Path("jobs")
+  public Map<Integer, String> jobs() {
+    return crawlerService.jobs();
   }
 
 }

@@ -1,5 +1,6 @@
 package org.dcn.aldous.crawler.services.site;
 
+import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import org.dcn.aldous.database.ItemsDAO;
 
@@ -21,17 +22,26 @@ public class SitesCrawlerService {
 
   private final AtomicInteger idGenerator;
 
+  public void crawlAll() {
+    crawlerFactory.supplyAll().stream()
+        .forEach(this::runJob);
+  }
+
   public CrawlerResponse startCrawling(String siteUrl) {
-    Optional<SiteCrawler> crawlerOptional = crawlerFactory.supply(siteUrl);
-    if (!crawlerOptional.isPresent()) {
+    Optional<SiteCrawler> crawler = crawlerFactory.supply(siteUrl);
+    if (!crawler.isPresent()) {
       return new CrawlerResponse("Site not covered: " + siteUrl, -1);
     } else {
-      SiteCrawler crawler = crawlerOptional.get();
-      runAsync(crawler);
-      int id = idGenerator.getAndIncrement();
-      crawlerJobs.put(id, crawler);
+      int id = runJob(crawler.get());
       return new CrawlerResponse("Started crawling " + siteUrl, id);
     }
+  }
+
+  private int runJob(SiteCrawler crawler) {
+    runAsync(crawler);
+    int id = idGenerator.getAndIncrement();
+    crawlerJobs.put(id, crawler);
+    return id;
   }
 
   public CrawlerResponse info(Integer id) {
@@ -48,5 +58,9 @@ public class SitesCrawlerService {
       subscription.addSubscriber(itemsDAO::addItem);
       crawler.crawlSite();
     });
+  }
+
+  public Map<Integer, String> jobs() {
+    return Maps.transformValues(crawlerJobs, Object::toString);
   }
 }

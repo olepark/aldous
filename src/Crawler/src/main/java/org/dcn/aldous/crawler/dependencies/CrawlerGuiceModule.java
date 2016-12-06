@@ -22,12 +22,13 @@ public class CrawlerGuiceModule extends AbstractModule {
   protected void configure() {
     bind(Config.class).toProvider(ConfigProvider.class);
     bind(ItemsDAO.class).toProvider(ItemsDAOProvider.class).in(Singleton.class);
+    bind(SiteCrawlerFactory.class).toProvider(SiteCrawlerFactoryProvider.class).in(Singleton.class);
   }
 
   @Provides
   @Singleton
-  SitesCrawlerService sitesCrawlerService(ItemsDAO itemsDAO) {
+  SitesCrawlerService sitesCrawlerService(ItemsDAO itemsDAO, SiteCrawlerFactory factory) {
     ExecutorThreadPool threadPool = new ExecutorThreadPool(4, 100, 10, TimeUnit.SECONDS);
-    return new SitesCrawlerService(new SiteCrawlerFactory(), itemsDAO, threadPool, newHashMap(), new AtomicInteger());
+    return new SitesCrawlerService(factory, itemsDAO, threadPool, newHashMap(), new AtomicInteger());
   }
 }

@@ -1,17 +1,23 @@
 package org.dcn.aldous.crawler.services.site;
 
-import java.util.Optional;
+import lombok.AllArgsConstructor;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+@AllArgsConstructor
 public class SiteCrawlerFactory {
 
-  public Optional<SiteCrawler> supply(String url) {
-    if (url.contains("ulmart")) {
-      return Optional.of(UlmartCrawler.getUlmartCrawler());
-    } else if (url.contains("mvideo")) {
-      return Optional.of(MVideoCrawler.getMVideoCrawler());
-    } else {
-      return Optional.empty();
-    }
+  private final Map<String, Supplier<SiteCrawler>> crawlers;
+
+  public Optional<SiteCrawler> supply(String key) {
+    return Optional.ofNullable(crawlers.get(key)).map(Supplier::get);
   }
 
+  public List<SiteCrawler> supplyAll() {
+    return crawlers.values().stream().map(Supplier::get).collect(Collectors.toList());
+  }
 }
