@@ -100,7 +100,6 @@ public class UlmartCrawler implements SiteCrawler {
     //hardcoded urls
     Set<String> urls = Sets.newHashSet(
             "https://www.ulmart.ru/catalog/15007481?sort=5&viewType=1&rec=true",
-            "https://www.ulmart.ru/catalog/996333333333333333333325?sort=5&viewType=1&rec=true",
             "http://mxp.ulmart.ru/catalog/mxp_home?sort=5&viewType=1&rec=true",
             "https://www.ulmart.ru/catalog/15010148?sort=5&viewType=1&rec=true",
             "https://www.ulmart.ru/catalog/mirror_camera?sort=5&viewType=1&rec=true",
