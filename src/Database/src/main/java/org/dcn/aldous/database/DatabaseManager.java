@@ -29,7 +29,17 @@ public class DatabaseManager {
   @SneakyThrows
   public void createTableItems() {
     Connection connection = connect();
-    String sql = format("create table %s(ID  SERIAL PRIMARY KEY, %s);", Item.TABLE, extractColumnNames());
+    String constraint = "constraint unique_item UNIQUE(vendor,name,url)";
+    String sql = format("create table %s(ID  SERIAL PRIMARY KEY, %s, %s);", Item.TABLE, extractColumnNames(), constraint);
+    PreparedStatement statement = connection.prepareStatement(sql);
+    statement.execute();
+  }
+
+  @SneakyThrows
+  public void alterTableItems() {
+    Connection connection = connect();
+    String constraint = "constraint unique_item UNIQUE(vendor,name,url)";
+    String sql = format("alter table %s add " + constraint + ";", Item.TABLE, extractColumnNames());
     PreparedStatement statement = connection.prepareStatement(sql);
     statement.execute();
   }

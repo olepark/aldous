@@ -21,15 +21,16 @@ public class ItemsDAO {
   private static final String delimiter = "/,/";
 
   public void addItem(Item item) {
+    String onConflict = "on conflict (vendor,name,url) do update " +
+        "set price=EXCLUDED.price, tags=EXCLUDED.tags, properties=EXCLUDED.properties";
     int inserted = database
-        .update("insert into items(" + columnsString() + ") values(?, ?, ?, ?, ?, ?) " +
-            "on conflict (url) do update set price=EXCLUDED.price, tags=EXCLUDED.tags, properties=EXCLUDED.properties")
-        .parameter(item.vendor())
-        .parameter(item.name())
-        .parameter(item.url())
-        .parameter(item.price())
-        .parameter(getJoined(item.tags()))
-        .parameter(getJoined(item.properties()))
+        .update("insert into items(" + columnsString() + ") values(?, ?, ?, ?, ?, ?) " + onConflict)
+        .parameter(removeAllNullChars(item.vendor()))
+        .parameter(removeAllNullChars(item.name()))
+        .parameter(removeAllNullChars(item.url()))
+        .parameter(removeAllNullChars(item.price()))
+        .parameter(removeAllNullChars(getJoined(item.tags())))
+        .parameter(removeAllNullChars(getJoined(item.properties())))
         .execute();
     Preconditions.checkState(inserted == 1, "Failed to insert " + item);
   }
@@ -75,6 +76,12 @@ public class ItemsDAO {
   }
 
   private String getJoined(List<String> strings) {
-    return strings.stream().collect(joining(delimiter));
+    return strings.stream()
+        .map(this::removeAllNullChars)
+        .collect(joining(delimiter));
+  }
+
+  private String removeAllNullChars(String s) {
+    return s.replaceAll("\\x00", "");
   }
 }

@@ -47,7 +47,7 @@ public class MVideoCrawler implements SiteCrawler {
         try {
           crawlCatalogue(catalogueUrl +"/f");
         } catch (IOException ex) {
-          log.debug("This link doesn't exist: {}", catalogueUrl + ex);
+          log.debug("This link doesn't exist: {}", catalogueUrl, ex);
         }
       }
     }
