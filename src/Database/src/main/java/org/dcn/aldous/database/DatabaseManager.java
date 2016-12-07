@@ -1,6 +1,7 @@
 package org.dcn.aldous.database;
 
 import com.github.davidmoten.rx.jdbc.Database;
+import com.github.davidmoten.rx.jdbc.tuple.TupleN;
 import com.github.davidmoten.util.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.typesafe.config.Config;
@@ -12,14 +13,18 @@ import org.dcn.aldous.providers.ConfigProvider;
 import rx.Observable;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
+import static java.util.stream.Collectors.joining;
 
 @AllArgsConstructor
 public class DatabaseManager {
@@ -27,29 +32,86 @@ public class DatabaseManager {
   private final Config config;
 
   @SneakyThrows
-  public void createTableItems() {
+  public void createTable(Class<?> entity, String ... additionalFields) {
     Connection connection = connect();
-    String constraint = "constraint unique_item UNIQUE(vendor,name,url)";
-    String sql = format("create table %s(ID  SERIAL PRIMARY KEY, %s, %s);", Item.TABLE, extractColumnNames(), constraint);
+    String constraint = constraint(entity);
+    String sql = format("create table %s(%s%s%s);",
+        tableName(entity), id(entity), columnNames(entity), add(constraint, additionalFields));
+    System.out.println(sql);
     PreparedStatement statement = connection.prepareStatement(sql);
     statement.execute();
   }
 
+  private String id(Class<?> entity) {
+    Field[] fields = entity.getDeclaredFields();
+    for (Field field : fields) {
+      if (field.isAnnotationPresent(Id.class)) {
+        return "ID  SERIAL PRIMARY KEY, ";
+      }
+    }
+    return "";
+  }
+
+  private String add(String constraint, String[] additionalFields) {
+    StringBuilder builder = new StringBuilder();
+    for (String field : additionalFields) {
+      builder.append(", ");
+      builder.append(field);
+    }
+    if (!constraint.isEmpty()) {
+      builder.append(", ");
+      builder.append(constraint);
+    }
+    return builder.toString();
+  }
+
+  private String constraint(Class<?> entity) {
+    String uniqueFields = uniqueFields(entity);
+    if (!uniqueFields.isEmpty()) {
+      return format("constraint unique_%s UNIQUE(%s)", entityName(entity), uniqueFields);
+    } else {
+      return "";
+    }
+  }
+
+  private String uniqueFields(Class<?> entity) {
+    return Arrays.asList(entity.getDeclaredFields()).stream()
+        .filter(f -> f.isAnnotationPresent(Column.class))
+        .map(f -> f.getAnnotation(Column.class))
+        .filter(Column::unique).map(Column::name)
+        .collect(joining(", "));
+  }
+
   @SneakyThrows
-  public void alterTableItems() {
+  public void dropTable(Class<?> entity) {
     Connection connection = connect();
-    String constraint = "constraint unique_item UNIQUE(vendor,name,url)";
-    String sql = format("alter table %s add " + constraint + ";", Item.TABLE, extractColumnNames());
+    String sql = format("drop table %s;", tableName(entity));
     PreparedStatement statement = connection.prepareStatement(sql);
     statement.execute();
   }
 
-  @SneakyThrows
-  public void dropTableItems() {
-    Connection connection = connect();
-    String sql = format("drop table %s;", Item.TABLE);
-    PreparedStatement statement = connection.prepareStatement(sql);
-    statement.execute();
+  private String tableName(Class<?> aClass) {
+    return entityName(aClass) + "s";
+  }
+
+  private String entityName(Class<?> entity) {
+    return entity.getAnnotation(Entity.class).name();
+  }
+
+  private String columnNames(Class<?> aClass) {
+    return Arrays.asList(aClass.getDeclaredFields()).stream()
+        .filter(f -> f.isAnnotationPresent(Column.class))
+        .map(f -> f.getAnnotation(Column.class).name() + " " + sqlFieldType(f))
+        .collect(joining(", "));
+  }
+
+  private String sqlFieldType(Field f) {
+    String typeName = f.getType().getName();
+    if (typeName.equals(String.class.getName())) {
+      return "TEXT";
+    } else {
+      return "TEXT";
+    }
   }
 
   public void printTables() {
@@ -79,25 +141,11 @@ public class DatabaseManager {
     while (columns.next()) {
       System.out.println(columns.getString(4) + " " + columns.getString(6));
     }
-    ItemsDAO itemsDAO = new ItemsDAO(Database.from(connection));
-    Observable<Item> matchingItems = itemsDAO.getMatchingItems("_");
-    matchingItems.forEach(System.out::println);
-  }
-
-  private String extractColumnNames() {
-    return Arrays.asList(Item.class.getDeclaredFields()).stream()
-        .filter(f -> f.isAnnotationPresent(Column.class))
-        .map(f -> f.getAnnotation(Column.class).name() + " " + sqlFieldType(f))
-        .collect(Collectors.joining(", "));
-  }
-
-  private String sqlFieldType(Field f) {
-    String typeName = f.getType().getName();
-    if (typeName.equals(String.class.getName())) {
-      return "TEXT";
-    } else {
-      return "TEXT";
-    }
+    Database.from(connection)
+        .select("select * from " + tableName)
+        .getTupleN()
+        .map(row -> row.values().stream().map(Object::toString).collect(joining(", ")))
+        .forEach(System.out::println);
   }
 
   private Connection connect() throws SQLException {
@@ -108,15 +156,7 @@ public class DatabaseManager {
     return DriverManager.getConnection(url, user, password);
   }
 
-  public static void main(String[] args) throws Exception {
-    DatabaseManager manager = DatabaseManager.of(new ConfigProvider().get());
-    Arrays.asList(DatabaseManager.class.getMethods()).stream()
-        .filter(m -> m.getName().equals(args[0]))
-        .findFirst().orElseThrow(() -> new IllegalArgumentException("No such method: " + args[0]))
-        .invoke(manager, Arrays.copyOfRange(args, 1, args.length));
-  }
-
-  private static DatabaseManager of(Config config) {
+  static DatabaseManager of(Config config) {
     return new DatabaseManager(config);
   }
 }

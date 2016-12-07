@@ -1,20 +1,16 @@
 package org.dcn.aldous.database;
 
-import org.assertj.core.util.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import org.dcn.aldous.database.lists.ItemList;
+import org.dcn.aldous.database.users.AldousUser;
+import org.dcn.aldous.providers.ConfigProvider;
 
 public class DatabaseManagerRunner {
 
   public static void main(String[] args) throws Exception {
-    DatabaseManager.main(q("dropTableItems"));
-    DatabaseManager.main(q("createTableItems"));
-    DatabaseManager.main(q("viewTable", "items"));
-  }
-
-  @NotNull
-  private static String[] q(String ... args) {
-    Preconditions.checkArgument(args.length > 0, "You must specify action");
-    return args;
+    DatabaseManager manager = DatabaseManager.of(new ConfigProvider().get());
+    manager.dropTable(ItemList.class);
+    manager.createTable(ItemList.class);
+    manager.viewTable("lists");
   }
 
 }

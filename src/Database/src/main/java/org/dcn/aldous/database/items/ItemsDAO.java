@@ -3,11 +3,16 @@ package org.dcn.aldous.database.items;
 import com.github.davidmoten.rx.jdbc.Database;
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
+import org.dcn.aldous.database.lists.ItemList;
 import rx.Observable;
 
 import javax.persistence.Column;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -19,6 +24,12 @@ public class ItemsDAO {
   private final Database database;
 
   private static final String delimiter = "/,/";
+
+  public Optional<Item> getItemById(Integer id) {
+    Observable<Item> list = database.select("* from items where id=" + id)
+        .get(this::getItem);
+    return firstOfEmpty(list);
+  }
 
   public void addItem(Item item) {
     String onConflict = "on conflict (vendor,name,url) do update " +
@@ -66,19 +77,31 @@ public class ItemsDAO {
 
   private Observable<Item> selectWithAppend(String append) {
     return database.select("select * from items " + append)
-        .get(rs -> new Item(rs.getInt(1),
-            rs.getString(2),
-            rs.getString(3),
-            rs.getString(4),
-            rs.getString(5),
-            Arrays.asList(rs.getString(6).split(delimiter)),
-            Arrays.asList(rs.getString(7).split(delimiter))));
+        .get(this::getItem);
+  }
+
+  private Item getItem(ResultSet rs) throws SQLException {
+    return new Item(rs.getInt(1),
+        rs.getString(2),
+        rs.getString(3),
+        rs.getString(4),
+        rs.getString(5),
+        Arrays.asList(rs.getString(6).split(delimiter)),
+        Arrays.asList(rs.getString(7).split(delimiter)));
   }
 
   private String getJoined(List<String> strings) {
     return strings.stream()
         .map(this::removeAllNullChars)
         .collect(joining(delimiter));
+  }
+
+  private Optional<Item> firstOfEmpty(Observable<Item> observable) {
+    try {
+      return Optional.of(observable.toBlocking().first());
+    } catch (NoSuchElementException ex) {
+      return Optional.empty();
+    }
   }
 
   private String removeAllNullChars(String s) {

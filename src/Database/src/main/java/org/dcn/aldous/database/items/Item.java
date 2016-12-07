@@ -7,11 +7,12 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.List;
 
 @Data
 @Accessors(fluent = true)
-@Entity
+@Entity(name = "item")
 @JsonSerialize
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
     creatorVisibility = JsonAutoDetect.Visibility.NONE,
@@ -20,17 +21,16 @@ import java.util.List;
     getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class Item {
 
-  public static String TABLE = "items";
-
+  @Id
   private final Integer id;
 
-  @Column(name = "vendor")
+  @Column(name = "vendor", unique = true)
   private final String vendor;
 
-  @Column(name = "name")
+  @Column(name = "name", unique = true)
   private final String name;
 
-  @Column(name = "url")
+  @Column(name = "url", unique = true)
   private final String url;
 
   @Column(name = "price")
