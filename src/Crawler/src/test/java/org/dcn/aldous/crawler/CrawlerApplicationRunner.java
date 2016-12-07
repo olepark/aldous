@@ -1,7 +1,6 @@
 package org.dcn.aldous.crawler;
 
 import com.google.common.io.Resources;
-import java.io.*;
 
 public class CrawlerApplicationRunner {
 

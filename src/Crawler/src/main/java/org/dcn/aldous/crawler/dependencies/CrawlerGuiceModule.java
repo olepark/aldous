@@ -6,9 +6,9 @@ import com.google.inject.Singleton;
 import com.typesafe.config.Config;
 import org.dcn.aldous.crawler.services.site.SiteCrawlerFactory;
 import org.dcn.aldous.crawler.services.site.SitesCrawlerService;
-import org.dcn.aldous.database.ItemsDAO;
-import org.dcn.aldous.providers.ConfigProvider;
+import org.dcn.aldous.database.items.ItemsDAO;
 import org.dcn.aldous.database.providers.ItemsDAOProvider;
+import org.dcn.aldous.providers.ConfigProvider;
 import org.eclipse.jetty.util.thread.ExecutorThreadPool;
 
 import java.util.concurrent.TimeUnit;

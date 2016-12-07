@@ -1,4 +1,4 @@
-package org.dcn.aldous.database;
+package org.dcn.aldous.database.items;
 
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;

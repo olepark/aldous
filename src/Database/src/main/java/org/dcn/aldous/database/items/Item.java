@@ -1,4 +1,4 @@
-package org.dcn.aldous.database;
+package org.dcn.aldous.database.items;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

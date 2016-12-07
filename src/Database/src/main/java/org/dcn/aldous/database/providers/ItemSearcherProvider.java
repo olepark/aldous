@@ -2,8 +2,8 @@ package org.dcn.aldous.database.providers;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import org.dcn.aldous.database.ItemsDAO;
-import org.dcn.aldous.database.ItemsSearcher;
+import org.dcn.aldous.database.items.ItemsDAO;
+import org.dcn.aldous.database.items.ItemsSearcher;
 
 public class ItemSearcherProvider implements Provider<ItemsSearcher> {
 

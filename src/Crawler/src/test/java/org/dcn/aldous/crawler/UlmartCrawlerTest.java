@@ -1,7 +1,6 @@
 package org.dcn.aldous.crawler;
 
 import org.dcn.aldous.crawler.services.site.UlmartCrawler;
-import org.dcn.aldous.database.Item;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;

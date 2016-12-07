@@ -1,5 +1,8 @@
 package org.dcn.aldous.database;
 
+import org.dcn.aldous.database.items.Item;
+import org.dcn.aldous.database.items.ItemsDAO;
+import org.dcn.aldous.database.items.ItemsSearcher;
 import org.junit.Before;
 import org.junit.Test;
 

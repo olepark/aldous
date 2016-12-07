@@ -2,7 +2,7 @@ package org.dcn.aldous.database.providers;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import org.dcn.aldous.database.ItemsDAO;
+import org.dcn.aldous.database.items.ItemsDAO;
 
 public class ItemsDAOProvider implements Provider<ItemsDAO> {
 

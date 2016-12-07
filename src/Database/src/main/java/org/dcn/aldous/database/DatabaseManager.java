@@ -6,6 +6,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.typesafe.config.Config;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.dcn.aldous.database.items.Item;
+import org.dcn.aldous.database.items.ItemsDAO;
 import org.dcn.aldous.providers.ConfigProvider;
 import rx.Observable;
 

@@ -1,4 +1,4 @@
-package org.dcn.aldous.database;
+package org.dcn.aldous.database.items;
 
 import com.github.davidmoten.rx.jdbc.Database;
 import com.google.common.base.Preconditions;
@@ -8,7 +8,6 @@ import rx.Observable;
 import javax.persistence.Column;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;

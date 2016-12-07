@@ -2,7 +2,7 @@ package org.dcn.aldous.crawler.services.site;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import org.dcn.aldous.database.Item;
+import org.dcn.aldous.database.items.Item;
 
 import java.util.List;
 import java.util.function.Consumer;

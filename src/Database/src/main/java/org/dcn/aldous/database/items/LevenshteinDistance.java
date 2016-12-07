@@ -1,4 +1,4 @@
-package org.dcn.aldous.database;
+package org.dcn.aldous.database.items;
 
 import java.util.Arrays;
 

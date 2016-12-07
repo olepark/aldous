@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.typesafe.config.Config;
 
-class DBProvider implements Provider<Database> {
+public class DBProvider implements Provider<Database> {
 
   private final Config config;
 

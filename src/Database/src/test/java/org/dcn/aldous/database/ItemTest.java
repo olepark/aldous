@@ -1,6 +1,7 @@
 package org.dcn.aldous.database;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.dcn.aldous.database.items.Item;
 import org.junit.Test;
 
 import java.io.IOException;

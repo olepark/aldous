@@ -2,7 +2,7 @@ package org.dcn.aldous.crawler.services.site;
 
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
-import org.dcn.aldous.database.ItemsDAO;
+import org.dcn.aldous.database.items.ItemsDAO;
 
 import java.util.Map;
 import java.util.Optional;
