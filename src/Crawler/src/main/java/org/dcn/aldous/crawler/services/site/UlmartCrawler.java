@@ -52,7 +52,7 @@ public class UlmartCrawler implements SiteCrawler {
   private void crawlCatalogue(String url) throws IOException {
     Document doc = Jsoup.connect(url + "&pageSize=10000").get();
     List<Element> elementsList = doc.select("[href~=/goods/?]");
-    for (int i = 0; i < elementsList.size() / 2; i++) {
+    for (int i = 0; i < elementsList.size()/2; i++) {
       Item item = parseItemPage(this.ULMART + elementsList.get(i * 2).attr("href"));
       subscription.broadcast(item);
     }
@@ -118,7 +118,7 @@ public class UlmartCrawler implements SiteCrawler {
             "https://www.ulmart.ru/catalog/97783?sort=5&viewType=1&rec=true",
             "https://www.ulmart.ru/catalog/93622?sort=5&viewType=1&rec=true",
             "https://www.ulmart.ru/catalog/gamepads2?sort=5&viewType=1&rec=true",
-            "https://www.ulmart.ru/catalog/hardware",
+            "https://www.ulmart.ru/catalog/videocards?sort=5&viewType=1&rec=true",
             "https://www.ulmart.ru/catalog/graphic_tablets?sort=5&viewType=1&rec=true",
             "https://www.ulmart.ru/catalog/93211?sort=5&viewType=1&rec=true",
             "https://www.ulmart.ru/catalog/93287?sort=5&viewType=1&rec=true",

@@ -44,7 +44,11 @@ public class MVideoCrawler implements SiteCrawler {
       try {
         crawlCatalogue(catalogueUrl);
       } catch (IOException exp) {
-        log.debug("This link doesn't exist: {}", catalogueUrl + exp);
+        try {
+          crawlCatalogue(catalogueUrl +"/f");
+        } catch (IOException ex) {
+          log.debug("This link doesn't exist: {}", catalogueUrl + ex);
+        }
       }
     }
   }
@@ -58,8 +62,12 @@ public class MVideoCrawler implements SiteCrawler {
       if (elementsList.isEmpty())
         break;
       for (int i = 0; i < elementsList.size(); i++) {
-        Item item = parseItemPage(this.MVIDEO + elementsList.get(i).select("[href~=/products/?]").attr("href"));
-        subscription.broadcast(item);
+        try {
+          Item item = parseItemPage(this.MVIDEO + elementsList.get(i).select("[href~=/products/?]").attr("href"));
+          subscription.broadcast(item);
+        }catch (Exception exp){
+          log.debug("dunno what it is {}", exp);
+        }
       }
       k++;
     }
@@ -80,10 +88,14 @@ public class MVideoCrawler implements SiteCrawler {
     String scriptText = scriptElements.toString();
     String params = scriptText.substring(scriptText.indexOf("\"params\": {") + 15);
     params = params.substring(0, params.indexOf('}'));
-
     int i = params.indexOf('"');
-    while (i < params.length() && params.indexOf('"', i) != -1) {
-      propertiesComplete.add(params.substring(params.indexOf('"', i), params.indexOf(",", i)).replace('"', '\0'));
+    while (i < params.length() && params.indexOf('"', i) > -1) {
+      try {
+        propertiesComplete.add(params.substring(params.indexOf('"', i), params.indexOf("\",", i)).replace('"', '\0'));
+      } catch (Exception expect){
+        log.debug("{} dunno what it is {}", i, params);
+      }
+
       i = params.indexOf(",", i) + 1;
     }
     String price = getElementAttribute("\"price\": ", scriptText);
@@ -106,7 +118,6 @@ public class MVideoCrawler implements SiteCrawler {
     //hardcoded urls
     Set<String> urls = Sets.newHashSet(
             "http://www.mvideo.ru/noutbuki-planshety-komputery/noutbuki-118/f/category=igrovye-noutbuki-3607",
-            "http://www.mvideo.ru/krupnaya-kuhonnaya-tehnika/elektricheskie-plity-111",
             "http://www.mvideo.ru/hi-fi-tehnika/akustika-hi-fi-192",
             "http://www.mvideo.ru/smartfony-i-svyaz/smartfony-205",
             "http://www.mvideo.ru/televizory-i-cifrovoe-tv/televizory-65",
