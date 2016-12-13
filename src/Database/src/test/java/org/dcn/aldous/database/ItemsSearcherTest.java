@@ -25,7 +25,7 @@ public class ItemsSearcherTest {
         new Item(2, "Apple", "Iphone 5", "some-url", "", newArrayList("smartphone"), newArrayList("4 inches")),
         new Item(3, "Bogatyr'", "Socks", "some-url", "", newArrayList("socks", "men's"), newArrayList("size 41"))
     );
-    repository = new ItemsSearcher(new ItemsDAO(null));
+    repository = new ItemsSearcher(ItemsDAO.create(null));
   }
 
   @Test

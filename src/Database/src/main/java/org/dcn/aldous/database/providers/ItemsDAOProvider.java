@@ -15,7 +15,7 @@ public class ItemsDAOProvider implements Provider<ItemsDAO> {
 
   @Override
   public ItemsDAO get() {
-    return new ItemsDAO(dbProvider.get());
+    return ItemsDAO.create(dbProvider.get());
   }
 
 }

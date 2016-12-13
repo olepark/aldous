@@ -1,59 +1,31 @@
 package org.dcn.aldous.database.items;
 
 import com.github.davidmoten.rx.jdbc.Database;
-import com.google.common.base.Preconditions;
-import lombok.AllArgsConstructor;
-import org.dcn.aldous.database.lists.ItemList;
+import org.dcn.aldous.database.DAO;
+import org.dcn.aldous.database.SerializingUtil;
 import rx.Observable;
 
 import javax.persistence.Column;
+import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
-@AllArgsConstructor
-public class ItemsDAO {
-
-  private final Database database;
+public class ItemsDAO extends DAO<Item> {
 
   private static final String delimiter = "/,/";
 
-  public Optional<Item> getItemById(Integer id) {
-    Observable<Item> list = database.select("* from items where id=" + id)
-        .get(this::getItem);
-    return firstOfEmpty(list);
-  }
-
-  public void addItem(Item item) {
-    String onConflict = "on conflict (vendor,name,url) do update " +
-        "set price=EXCLUDED.price, tags=EXCLUDED.tags, properties=EXCLUDED.properties";
-    int inserted = database
-        .update("insert into items(" + columnsString() + ") values(?, ?, ?, ?, ?, ?) " + onConflict)
-        .parameter(removeAllNullChars(item.vendor()))
-        .parameter(removeAllNullChars(item.name()))
-        .parameter(removeAllNullChars(item.url()))
-        .parameter(removeAllNullChars(item.price()))
-        .parameter(removeAllNullChars(getJoined(item.tags())))
-        .parameter(removeAllNullChars(getJoined(item.properties())))
-        .execute();
-    Preconditions.checkState(inserted == 1, "Failed to insert " + item);
-  }
-
-  private String columnsString() {
-    return columns().collect(joining(", "));
-  }
-
-  private Stream<String> columns() {
-    return Arrays.asList(Item.class.getDeclaredFields()).stream()
-        .filter(f -> f.isAnnotationPresent(Column.class))
-        .map(f -> f.getAnnotation(Column.class).name());
+  private ItemsDAO(Database database,
+                  Class<Item> entityClass,
+                  Function<ResultSet, Item> rsParser,
+                  BiFunction<Field, Item, String> fieldSerializer) {
+    super(database, entityClass, rsParser, fieldSerializer);
   }
 
   public Observable<Item> getMatchingItems(String description) {
@@ -69,42 +41,33 @@ public class ItemsDAO {
   }
 
   private Observable<Item> whereContainsWord(String word) {
-    String where = "where " + columns()
+    String where = columns()
         .map(col -> format("UPPER(%s) LIKE '%%%s%%'", col, word.toUpperCase()))
         .collect(joining(" OR "));
-    return selectWithAppend(where);
+    return selectWhere(where);
   }
 
-  private Observable<Item> selectWithAppend(String append) {
-    return database.select("select * from items " + append)
-        .get(this::getItem);
+  private Stream<String> columns() {
+    return Arrays.asList(Item.class.getDeclaredFields()).stream()
+        .filter(f -> f.isAnnotationPresent(Column.class))
+        .map(f -> f.getAnnotation(Column.class).name());
   }
 
-  private Item getItem(ResultSet rs) throws SQLException {
-    return new Item(rs.getInt(1),
-        rs.getString(2),
-        rs.getString(3),
-        rs.getString(4),
-        rs.getString(5),
-        Arrays.asList(rs.getString(6).split(delimiter)),
-        Arrays.asList(rs.getString(7).split(delimiter)));
-  }
-
-  private String getJoined(List<String> strings) {
-    return strings.stream()
-        .map(this::removeAllNullChars)
-        .collect(joining(delimiter));
-  }
-
-  private Optional<Item> firstOfEmpty(Observable<Item> observable) {
+  private static Item getItem(ResultSet rs) {
     try {
-      return Optional.of(observable.toBlocking().first());
-    } catch (NoSuchElementException ex) {
-      return Optional.empty();
+      return new Item(rs.getInt(1),
+          rs.getString(2),
+          rs.getString(3),
+          rs.getString(4),
+          rs.getString(5),
+          Arrays.asList(rs.getString(6).split(delimiter)),
+          Arrays.asList(rs.getString(7).split(delimiter)));
+    } catch (SQLException e) {
+      throw new IllegalStateException("Cannot parse item from sql result");
     }
   }
 
-  private String removeAllNullChars(String s) {
-    return s.replaceAll("\\x00", "");
+  public static ItemsDAO create(Database database) {
+    return new ItemsDAO(database, Item.class, ItemsDAO::getItem, SerializingUtil::serialize);
   }
 }
