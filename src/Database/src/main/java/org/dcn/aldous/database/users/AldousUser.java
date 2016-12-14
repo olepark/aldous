@@ -1,6 +1,10 @@
 package org.dcn.aldous.database.users;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.dcn.aldous.database.lists.ItemList;
 
 import javax.persistence.Column;
@@ -11,6 +15,9 @@ import java.util.List;
 
 @Data
 @Entity(name = "user")
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@JsonAutoDetect
 public class AldousUser implements Principal {
 
   @Id

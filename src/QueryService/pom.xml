@@ -26,8 +26,12 @@
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+            <version>${dropwizard.version}</version>
+        </dependency><dependency>
+        <groupId>io.dropwizard</groupId>
+        <artifactId>dropwizard-auth</artifactId>
+        <version>${dropwizard.version}</version>
+    </dependency>
         <dependency>
             <groupId>ru.vyarus</groupId>
             <artifactId>dropwizard-guicey</artifactId>
@@ -55,4 +59,7 @@
             <classifier>models</classifier>
         </dependency>
     </dependencies>
+    <properties>
+        <dropwizard.version>1.0.0</dropwizard.version>
+    </properties>
 </project>

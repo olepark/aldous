@@ -21,7 +21,7 @@ public class ItemList {
   @Column(name = "itemIds")
   private final List<Integer> itemIds;
 
-  @Column(name = "ownerIds", unique = true)
-  private final List<Integer> ownerIds;
+  @Column(name = "ownerId", unique = true)
+  private final Integer ownerId;
 
 }

@@ -42,8 +42,9 @@ public class DatabaseManager {
     Preconditions.checkArgument(tables.next(), "Table " + tableName + " not found");
     ResultSet columns = md.getColumns(null, null, tableName, null);
     ArrayListMultimap.create();
+    System.out.println(tableName);
     while (columns.next()) {
-      System.out.println(columns.getString(4) + " " + columns.getString(6));
+      System.out.println("\t" + columns.getString(4) + " " + columns.getString(6));
     }
     Database.from(connection)
         .select("select * from " + tableName)

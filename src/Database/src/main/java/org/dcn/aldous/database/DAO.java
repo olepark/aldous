@@ -1,44 +1,40 @@
 package org.dcn.aldous.database;
 
 import com.github.davidmoten.rx.jdbc.Database;
+import com.github.davidmoten.rx.jdbc.QueryUpdate;
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import rx.Observable;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
 @Slf4j
-@RequiredArgsConstructor
 public class DAO<T> {
 
   private final Database database;
 
-  private final Class<T> entityClass;
+  private final ORM<T> orm;
+  
+  private final String tableName;
 
-  private final Function<ResultSet, T> rsParser;
+  public DAO(Database database, ORM<T> orm) {
+    this.database = database;
+    this.orm = orm;
+    tableName = orm.tableName();
+  }
 
-  private final BiFunction<Field, T, String> fieldSerializer;
-
-  public TableManager tableManager(DB db) {
-    return new TableManager(db);
+  public TableManager tableManager() {
+    return new TableManager();
   }
 
   public Optional<T> getById(Integer id) {
@@ -46,64 +42,61 @@ public class DAO<T> {
   }
 
   public void deleteById(Integer id) {
-    String sql = format("delete from %s where id=%d", tableName(), id);
+    String sql = format("delete from %s where id=%d", tableName, id);
     log.debug("Executing {}", sql);
     int affected = database.update(sql).execute();
     if (affected > 0) {
       log.debug("Deleted by id {}. {} Rows affected", id, affected);
     } else {
-      log.warn("Table {} was not affected by {}", tableName(), sql);
+      log.warn("Table {} was not affected by {}", tableName, sql);
     }
   }
 
-  public void add(T obj) {
-    String onConflict = conflict();
-    String columns = columns()
-        .map(Column::name)
-        .collect(joining(", "));
-    String values = colFields()
-        .map(f -> fieldSerializer.apply(f, obj))
-        .map(this::removeAllNullChars)
-        .map(this::quoted)
-        .collect(joining(", "));
-    String insert = format("insert into %s(%s) values(%s) %s",
-        tableName(), columns, values, onConflict);
+  public Integer add(T obj) {
+    String insert = insertStatement();
     log.debug("Executing {}", insert);
-    int inserted = database.update(insert).execute();
-    Preconditions.checkState(inserted == 1, "Failed to insert " + obj);
+    QueryUpdate.Builder update = database.update(insert);
+    List<Object> values = orm.columnValues(obj);
+    values.forEach(update::parameter);
+    Observable<Integer> id = update
+        .returnGeneratedKeys()
+        .get(rs -> rs.getInt(1));
+    return firstOfEmpty(id).orElse(null);
+  }
+
+  protected String insertStatement() {
+    String onConflict = conflict();
+    String columns = orm.collectColumns(c -> true, Column::name, c -> true, joining(", "));
+    String values = orm.collectColumns(c -> "?", joining(", "));
+    return format("insert into %s(%s) values(%s) %s",
+        tableName, columns, values, onConflict);
+  }
+
+  public String conflict() {
+    String nonUnique = orm.collectColumns(c -> !c.unique(),
+        c -> format("%s=EXCLUDED.%s", c.name(), c.name()), joining(", "));
+    String unique = orm.collectColumns(Column::unique, Column::name, joining(", "));
+    return format("on conflict (%s) do update set %s", unique, nonUnique);
+  }
+
+  public <R> void update(Integer id, String column, R newValue) {
+    int executed = database.update(format("update %s set %s=? where id=%d", tableName, column, id))
+        .parameter(orm.columnValue(column, newValue))
+        .execute();
+    Preconditions.checkState(executed > 0, format("Failed to update %s for id %d", column, id));
   }
 
   protected Optional<T> selectFirstWhere(String where) {
     return firstOfEmpty(selectWhere(where));
   }
 
-  private String quoted(String s) {
-    return "'" + s + "'";
-  }
-
-  private String conflict() {
-    String nonUnique = columns()
-        .map(Column::name)
-        .map(c -> format("%s=EXCLUDED.%s", c, c))
-        .collect(joining(", "));
-    return format("on conflict (%s) do update set %s", uniqueColumns(), nonUnique);
-  }
-
   public Observable<T> selectWhere(String where) {
     return database
-        .select("select * from " + tableName() + " where " + where)
-        .get(rsParser::apply);
+        .select(format("select * from %s where %s", tableName, where))
+        .get(orm::parse);
   }
-
-  private String tableName() {
-    return entityName() + "s";
-  }
-
-  private String entityName() {
-    return entityClass.getAnnotation(Entity.class).name();
-  }
-
-  private Optional<T> firstOfEmpty(Observable<T> observable) {
+  
+  private <R> Optional<R> firstOfEmpty(Observable<R> observable) {
     try {
       return Optional.of(observable.toBlocking().first());
     } catch (NoSuchElementException ex) {
@@ -111,44 +104,21 @@ public class DAO<T> {
     }
   }
 
-  private String removeAllNullChars(String s) {
-    return s.replaceAll("\\x00", "");
-  }
-
-  private String uniqueColumns() {
-    return columns()
-        .filter(Column::unique)
-        .map(Column::name)
-        .collect(joining(", "));
-  }
-
-  private Stream<Column> columns() {
-    return colFields().map(f -> f.getAnnotation(Column.class));
-  }
-
-  private Stream<Field> colFields() {
-    return Arrays.asList(entityClass.getDeclaredFields()).stream()
-        .filter(f -> f.isAnnotationPresent(Column.class));
-  }
-
-  @RequiredArgsConstructor
   public class TableManager {
-
-    private final DB db;
 
     @SneakyThrows(SQLException.class)
     public void createTable(String... additionalFields) {
       Connection connection = database.getConnectionProvider().get();
       String constraint = constraint();
       String sql = format("create table %s(%s%s%s);",
-          tableName(), id(), typedColumnNames(), add(constraint, additionalFields));
+          tableName, orm.id(), orm.typedColumnNames(), add(constraint, additionalFields));
       PreparedStatement statement = connection.prepareStatement(sql);
       statement.execute();
     }
 
     public boolean tableExists() {
       try {
-        database.select(format("select * from %s limit 1", tableName()))
+        database.select(format("select * from %s limit 1", tableName))
             .get(rs -> rs).first().toBlocking().first();
         return true;
       } catch (NoSuchElementException ex) {
@@ -167,7 +137,7 @@ public class DAO<T> {
     @SneakyThrows(SQLException.class)
     public void dropTable() {
       Connection connection = database.getConnectionProvider().get();
-      String sql = format("drop table %s;", tableName());
+      String sql = format("drop table %s;", tableName);
       PreparedStatement statement = connection.prepareStatement(sql);
       statement.execute();
     }
@@ -185,50 +155,14 @@ public class DAO<T> {
       return builder.toString();
     }
 
-    private String typedColumnNames() {
-      return colFields()
-          .map(f -> f.getAnnotation(Column.class).name() + " " + sqlFieldType(f))
-          .collect(joining(", "));
-    }
-
-    private String sqlFieldType(Field f) {
-      String typeName = f.getType().getName();
-      if (typeName.equals(String.class.getName())) {
-        return db.text;
-      } else {
-        return db.text;
-      }
-    }
-
-    private String id() {
-      Field[] fields = entityClass.getDeclaredFields();
-      for (Field field : fields) {
-        if (field.isAnnotationPresent(Id.class)) {
-          return format("ID %s PRIMARY KEY, ", db.autoincrement);
-        }
-      }
-      return "";
-    }
-
     private String constraint() {
-      String uniqueFields = uniqueColumns();
-      if (!uniqueFields.isEmpty()) {
-        return format("constraint unique_%s UNIQUE(%s)", entityName(), uniqueFields);
+      String unique = orm.collectColumns(Column::unique, Column::name, joining(", "));
+      if (!unique.isEmpty()) {
+        return format("constraint unique_%s UNIQUE(%s)", tableName, unique);
       } else {
         return "";
       }
     }
   }
 
-  @RequiredArgsConstructor
-  public enum DB {
-
-    POSTGESQL("SERIAL", "TEXT"),
-    HSQLDB("INTEGER IDENTITY", "VARCHAR(5000)"),
-    OTHER("INTEGER AUTOINCREMENT", "VARCHAR");
-
-    private final String autoincrement;
-
-    private final String text;
-  }
 }

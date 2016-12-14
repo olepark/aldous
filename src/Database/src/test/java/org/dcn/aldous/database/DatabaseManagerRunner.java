@@ -10,16 +10,28 @@ import org.dcn.aldous.providers.ConfigProvider;
 
 public class DatabaseManagerRunner {
 
+  private static final Config config = new ConfigProvider().get();
+
+  private static final Database database = new DBProvider(config).get();
+
   public static void main(String[] args) throws Exception {
     createAll();
+    viewAll();
+  }
+
+  private static void dropAll() {
+    ItemsDAO.create(database).tableManager().dropTable();
+    UsersDAO.create(database).tableManager().dropTable();
+    ListsDAO.create(database).tableManager().dropTable();
   }
 
   private static void createAll() {
-    Config config = new ConfigProvider().get();
-    Database database = new DBProvider(config).get();
-    ItemsDAO.create(database).tableManager(DAO.DB.POSTGESQL).createIfAbsent();
-    UsersDAO.create(database).tableManager(DAO.DB.POSTGESQL).createIfAbsent("username TEXT", "password TEXT");
-    ListsDAO.create(database).tableManager(DAO.DB.POSTGESQL).createIfAbsent();
+    ItemsDAO.create(database).tableManager().createIfAbsent();
+    UsersDAO.create(database).tableManager().createIfAbsent("username TEXT", "password TEXT");
+    ListsDAO.create(database).tableManager().createIfAbsent();
+  }
+
+  private static void viewAll() {
     DatabaseManager manager = DatabaseManager.of(config);
     manager.viewTable("items");
     manager.viewTable("users");

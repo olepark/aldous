@@ -29,26 +29,24 @@ public class DAOTest<T> {
 
   private final static Database db = getDB();
 
-  private static final int id = 1;
-
   private final DAO<T> dao;
 
   private final Supplier<T> supplier;
 
   @Before
   public void setUp() {
-    dao.tableManager(DAO.DB.POSTGESQL).createIfAbsent();
+    dao.tableManager().createIfAbsent();
   }
 
   @After
   public void tearDown() {
-    dao.tableManager(DAO.DB.POSTGESQL).dropTable();
+    dao.tableManager().dropTable();
   }
 
   @Test
   public void test() {
     T original = supplier.get();
-    dao.add(original);
+    Integer id = dao.add(original);
     Optional<T> byId = dao.getById(id);
     assertThat(byId).isPresent();
     T retrieved = byId.get();
@@ -65,15 +63,15 @@ public class DAOTest<T> {
   public static List<Object[]> daos() {
 
     DAO<Item> itemDAO = ItemsDAO.create(db);
-    Supplier<Item> samsung = () -> new Item(id, "Samsung", "Galaxy S5",
+    Supplier<Item> samsung = () -> new Item(1, "Samsung", "Galaxy S5",
         "http://nope", "228", newArrayList("smartphone", "cellphone"),
         newArrayList("dope", "expensive", "iphone plagiarism"));
 
     ListsDAO listsDAO = ListsDAO.create(db);
-    Supplier<ItemList> lists = () -> new ItemList(id, "list 1", newArrayList(1, 200), newArrayList(7));
+    Supplier<ItemList> lists = () -> new ItemList(1, "list 1", newArrayList(1, 200), 7);
 
     UsersDAO usersDAO = UsersDAO.create(db);
-    Supplier<AldousUser> users = () -> new AldousUser(id, "OP", newArrayList(5));
+    Supplier<AldousUser> users = () -> new AldousUser(1, "OP", newArrayList(5));
 
     List<Object[]> list = newArrayList();
     list.add(new Object[]{itemDAO, samsung});

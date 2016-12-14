@@ -5,8 +5,12 @@ import com.google.inject.Singleton;
 import com.typesafe.config.Config;
 import org.dcn.aldous.database.items.ItemsDAO;
 import org.dcn.aldous.database.items.ItemsSearcher;
+import org.dcn.aldous.database.lists.ListsDAO;
 import org.dcn.aldous.database.providers.ItemSearcherProvider;
 import org.dcn.aldous.database.providers.ItemsDAOProvider;
+import org.dcn.aldous.database.providers.ListsDAOProvider;
+import org.dcn.aldous.database.providers.UsersDAOProvider;
+import org.dcn.aldous.database.users.UsersDAO;
 import org.dcn.aldous.providers.ConfigProvider;
 
 public class QueryServiceModule extends AbstractModule {
@@ -15,6 +19,8 @@ public class QueryServiceModule extends AbstractModule {
   protected void configure() {
     bind(Config.class).toProvider(ConfigProvider.class);
     bind(ItemsDAO.class).toProvider(ItemsDAOProvider.class).in(Singleton.class);
+    bind(UsersDAO.class).toProvider(UsersDAOProvider.class).in(Singleton.class);
+    bind(ListsDAO.class).toProvider(ListsDAOProvider.class).in(Singleton.class);
     bind(ItemsSearcher.class).toProvider(ItemSearcherProvider.class).in(Singleton.class);
   }
 }

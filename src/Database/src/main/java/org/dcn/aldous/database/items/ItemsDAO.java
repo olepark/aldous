@@ -2,16 +2,14 @@ package org.dcn.aldous.database.items;
 
 import com.github.davidmoten.rx.jdbc.Database;
 import org.dcn.aldous.database.DAO;
-import org.dcn.aldous.database.SerializingUtil;
+import org.dcn.aldous.database.ORM;
+import org.dcn.aldous.database.PostgresTypeMapper;
 import rx.Observable;
 
 import javax.persistence.Column;
-import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -21,11 +19,8 @@ public class ItemsDAO extends DAO<Item> {
 
   private static final String delimiter = "/,/";
 
-  private ItemsDAO(Database database,
-                  Class<Item> entityClass,
-                  Function<ResultSet, Item> rsParser,
-                  BiFunction<Field, Item, String> fieldSerializer) {
-    super(database, entityClass, rsParser, fieldSerializer);
+  private ItemsDAO(Database database, ORM<Item> orm) {
+    super(database, orm);
   }
 
   public Observable<Item> getMatchingItems(String description) {
@@ -68,6 +63,6 @@ public class ItemsDAO extends DAO<Item> {
   }
 
   public static ItemsDAO create(Database database) {
-    return new ItemsDAO(database, Item.class, ItemsDAO::getItem, SerializingUtil::serialize);
+    return new ItemsDAO(database, new ORM<>(Item.class, new PostgresTypeMapper()));
   }
 }

@@ -55,7 +55,7 @@ public class SitesCrawlerService {
   private void runAsync(SiteCrawler crawler) {
     executor.execute(() -> {
       Subscription subscription = crawler.subscription();
-      subscription.addSubscriber(itemsDAO::addItem);
+      subscription.addSubscriber(itemsDAO::add);
       crawler.crawlSite();
     });
   }
