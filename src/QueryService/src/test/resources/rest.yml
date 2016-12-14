@@ -12,7 +12,7 @@ server:
 logging:
 
   # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
-  level: TRACE
+  level: INFO
 
   appenders:
     - type: console
