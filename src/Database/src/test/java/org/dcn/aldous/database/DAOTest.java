@@ -71,7 +71,7 @@ public class DAOTest<T> {
     Supplier<ItemList> lists = () -> new ItemList(1, "list 1", newArrayList(1, 200), 7);
 
     UsersDAO usersDAO = UsersDAO.create(db);
-    Supplier<AldousUser> users = () -> new AldousUser(1, "OP", newArrayList(5));
+    Supplier<AldousUser> users = () -> new AldousUser(1, "OP", newArrayList(5), "olepark", "qwerty");
 
     List<Object[]> list = newArrayList();
     list.add(new Object[]{itemDAO, samsung});

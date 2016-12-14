@@ -29,4 +29,10 @@ public class AldousUser implements Principal {
   @Column(name = "listIds")
   private final List<Integer> listIds;
 
+  @Column(name = "username", unique = true)
+  private final String username;
+
+  @Column(name = "password")
+  private final String password;
+
 }

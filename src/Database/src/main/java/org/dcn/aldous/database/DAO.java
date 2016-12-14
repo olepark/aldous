@@ -107,11 +107,11 @@ public class DAO<T> {
   public class TableManager {
 
     @SneakyThrows(SQLException.class)
-    public void createTable(String... additionalFields) {
+    public void createTable() {
       Connection connection = database.getConnectionProvider().get();
       String constraint = constraint();
       String sql = format("create table %s(%s%s%s);",
-          tableName, orm.id(), orm.typedColumnNames(), add(constraint, additionalFields));
+          tableName, orm.id(), orm.typedColumnNames(), add(constraint));
       PreparedStatement statement = connection.prepareStatement(sql);
       statement.execute();
     }
@@ -128,9 +128,9 @@ public class DAO<T> {
       }
     }
 
-    public void createIfAbsent(String... additionalFields) {
+    public void createIfAbsent() {
       if (!tableExists()) {
-        createTable(additionalFields);
+        createTable();
       }
     }
 
@@ -142,15 +142,10 @@ public class DAO<T> {
       statement.execute();
     }
 
-    private String add(String constraint, String[] additionalFields) {
+    private String add(String constraint) {
       StringBuilder builder = new StringBuilder();
-      for (String field : additionalFields) {
-        builder.append(", ");
-        builder.append(field);
-      }
       if (!constraint.isEmpty()) {
-        builder.append(", ");
-        builder.append(constraint);
+        builder.append(", ").append(constraint);
       }
       return builder.toString();
     }

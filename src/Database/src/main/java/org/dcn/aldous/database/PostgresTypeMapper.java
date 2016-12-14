@@ -11,6 +11,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.*;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 public class PostgresTypeMapper implements DatabaseTypeMapper {
 
@@ -49,7 +50,10 @@ public class PostgresTypeMapper implements DatabaseTypeMapper {
       String list = resultSet.getString(label);
       List<String> strings = newArrayList(list.split(delimiter));
       if (label.toLowerCase().contains("ids")) { //TODO generalize
-        return transform(strings, Integer::parseInt);
+        return strings.stream()
+            .filter(s -> !s.isEmpty())
+            .map(Integer::parseInt)
+            .collect(toList());
       }
       return strings;
     }
@@ -70,6 +74,6 @@ public class PostgresTypeMapper implements DatabaseTypeMapper {
   }
 
   private String removeAllNullChars(String s) {
-    return s.replaceAll("\\x00", "");
+    return s == null ? s : s.replaceAll("\\x00", "");
   }
 }

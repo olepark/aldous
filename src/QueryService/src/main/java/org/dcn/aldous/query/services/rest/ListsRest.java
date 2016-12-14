@@ -1,5 +1,6 @@
 package org.dcn.aldous.query.services.rest;
 
+import com.google.common.base.Preconditions;
 import feign.Headers;
 import io.dropwizard.auth.Auth;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,9 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
+import static java.lang.String.format;
 
 @Path("api/1.0/list")
 @Produces(MediaType.APPLICATION_JSON)
@@ -31,22 +34,34 @@ public class ListsRest {
   private final UsersDAO usersDAO;
 
   @GET
-  @Path("add")
+  @Path("addList")
   @Headers("Content-Encoding: gzip")
-  public void addList(@Auth AldousUser user,
+  public Integer addList(@Auth AldousUser user,
                       @QueryParam("name") String name) {
     Integer ownerId = user.getId();
-    listsDAO.add(new ItemList(0, name, newArrayList(), ownerId));
+    Integer listId = listsDAO.add(new ItemList(0, name, newArrayList(), ownerId));
+    List<Integer> listIds = user.getListIds();
+    listIds.add(listId);
+    usersDAO.update(ownerId, "listIds", listIds);
+    return listId;
   }
 
   @GET
-  @Path("add")
+  @Path("addItem")
   @Headers("Content-Encoding: gzip")
-  public void addItemToList(@QueryParam("listId") Integer listId,
+  public Integer addItemToList(@Auth AldousUser user,
+                            @QueryParam("listId") Integer listId,
                             @QueryParam("itemId") @NotNull Integer itemId) {
-    List<Integer> itemIds = listsDAO.getById(listId).get().getItemIds();
+    Optional<ItemList> byId = listsDAO.getById(listId);
+    checkState(byId.isPresent(), format("List with id %d not found", listId));
+    ItemList list = byId.get();
+    Integer ownerId = list.getOwnerId();
+    Integer userId = user.getId();
+    checkState(ownerId.equals(userId), format("List %d does not belong to user %d", listId, userId));
+    List<Integer> itemIds = list.getItemIds();
     itemIds.add(itemId);
     listsDAO.update(listId, "itemIds", itemIds);
+    return listId;
   }
 
 }

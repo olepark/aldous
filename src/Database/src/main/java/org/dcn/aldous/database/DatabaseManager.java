@@ -1,6 +1,7 @@
 package org.dcn.aldous.database;
 
 import com.github.davidmoten.rx.jdbc.Database;
+import com.github.davidmoten.rx.jdbc.tuple.TupleN;
 import com.github.davidmoten.util.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.typesafe.config.Config;
@@ -49,8 +50,14 @@ public class DatabaseManager {
     Database.from(connection)
         .select("select * from " + tableName)
         .getTupleN()
-        .map(row -> row.values().stream().map(Object::toString).collect(joining(", ")))
+        .map(this::rowToString)
         .forEach(System.out::println);
+  }
+
+  protected String rowToString(TupleN<Object> row) {
+    return row.values().stream()
+        .map(Object::toString)
+        .collect(joining(", "));
   }
 
   private Connection connect() throws SQLException {

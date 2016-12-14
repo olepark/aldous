@@ -50,7 +50,8 @@ public class ORM<T> {
   }
 
   public List<Object> columnValues(T t) {
-    return transform(colFieldsList(), f -> columnValueFromT(t, f));
+    List<Field> fieldsList = colFields().collect(Collectors.toList());
+    return transform(fieldsList, f -> columnValueFromT(t, f));
   }
 
 
@@ -132,10 +133,6 @@ public class ORM<T> {
   private Stream<Field> colFields() {
     return newArrayList(entityClass.getDeclaredFields()).stream()
         .filter(f -> f.isAnnotationPresent(Column.class));
-  }
-
-  private List<Field> colFieldsList() {
-    return colFields().collect(Collectors.toList());
   }
 
   private boolean isIdPresent() {
