@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.String.format;
@@ -42,10 +43,10 @@ public class QueryServiceIntegrationTest {
 
   @Test
   public void testAppMainScenario() throws IOException {
-    String username = "olepark";
+    String username = UUID.randomUUID().toString();
     String password = "pass";
     Form newUser = new Form()
-        .param("name", "Oleg Parkhomenko")
+        .param("name", "John Doe")
         .param("username", username)
         .param("password", password);
     Response add = newRequest(UsersRest.class, "add")

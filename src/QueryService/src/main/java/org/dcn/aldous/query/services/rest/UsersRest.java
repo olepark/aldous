@@ -28,7 +28,11 @@ public class UsersRest {
   public Integer addUser(@FormParam("name") String name,
                          @FormParam("username") String username,
                          @FormParam("password") String password) {
-    return usersDAO.add(new AldousUser(null, name, newArrayList(), username, password));
+    if (usersDAO.exists(username)) {
+      return null;
+    } else {
+      return usersDAO.add(new AldousUser(null, name, newArrayList(), username, password));
+    }
   }
 
 }

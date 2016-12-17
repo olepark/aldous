@@ -23,8 +23,11 @@ public class UsersDAO extends DAO<AldousUser> {
     return selectFirstWhere(where);
   }
 
+  public boolean exists(String username) {
+    return selectFirstWhere(String.format("username='%s'", username)).isPresent();
+  }
+
   public static UsersDAO create(Database database) {
     return new UsersDAO(database, AldousUser.class, new PasswordEncryptor());
   }
-
 }

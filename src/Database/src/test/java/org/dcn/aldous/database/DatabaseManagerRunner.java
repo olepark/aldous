@@ -33,7 +33,7 @@ public class DatabaseManagerRunner {
 
   private static void viewAll() {
     DatabaseManager manager = DatabaseManager.of(config);
-//    manager.viewTable("items");
+    manager.viewTable("items");
     manager.viewTable("users");
     manager.viewTable("lists");
   }
