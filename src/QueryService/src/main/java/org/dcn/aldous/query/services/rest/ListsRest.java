@@ -37,7 +37,7 @@ public class ListsRest {
   @Path("addList")
   @Headers("Content-Encoding: gzip")
   public Integer addList(@Auth AldousUser user,
-                      @QueryParam("name") String name) {
+                         @QueryParam("name") String name) {
     Integer ownerId = user.getId();
     Integer listId = listsDAO.add(new ItemList(0, name, newArrayList(), ownerId));
     List<Integer> listIds = user.getListIds();
@@ -50,8 +50,8 @@ public class ListsRest {
   @Path("addItem")
   @Headers("Content-Encoding: gzip")
   public Integer addItemToList(@Auth AldousUser user,
-                            @QueryParam("listId") Integer listId,
-                            @QueryParam("itemId") @NotNull Integer itemId) {
+                               @QueryParam("listId") Integer listId,
+                               @QueryParam("itemId") @NotNull Integer itemId) {
     Optional<ItemList> byId = listsDAO.getById(listId);
     checkState(byId.isPresent(), format("List with id %d not found", listId));
     ItemList list = byId.get();
@@ -62,6 +62,16 @@ public class ListsRest {
     itemIds.add(itemId);
     listsDAO.update(listId, "itemIds", itemIds);
     return listId;
+  }
+
+  @GET
+  @Path("getList")
+  @Headers("Content-Encoding: gzip")
+  public ItemList getList(@Auth AldousUser user,
+                         @QueryParam("listId") Integer listId) {
+    Optional<ItemList> list = listsDAO.getById(listId);
+    checkState(list.isPresent(), format("List with id %d not found", listId));
+    return list.get();
   }
 
 }

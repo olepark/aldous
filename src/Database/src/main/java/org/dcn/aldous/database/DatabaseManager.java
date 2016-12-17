@@ -56,7 +56,7 @@ public class DatabaseManager {
 
   protected String rowToString(TupleN<Object> row) {
     return row.values().stream()
-        .map(Object::toString)
+        .map((o) -> o == null ? "" : o.toString())
         .collect(joining(", "));
   }
 

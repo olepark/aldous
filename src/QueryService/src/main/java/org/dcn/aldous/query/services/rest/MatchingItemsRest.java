@@ -3,6 +3,7 @@ package org.dcn.aldous.query.services.rest;
 import com.google.inject.Inject;
 import feign.Headers;
 import io.dropwizard.auth.Auth;
+import lombok.AllArgsConstructor;
 import org.dcn.aldous.database.items.Item;
 import org.dcn.aldous.database.items.ItemsSearcher;
 import org.dcn.aldous.database.users.AldousUser;
@@ -16,16 +17,12 @@ import java.util.List;
 
 @Path("api/1.0/query")
 @Produces(MediaType.APPLICATION_JSON)
+@AllArgsConstructor(onConstructor = @__(@javax.inject.Inject))
 public class MatchingItemsRest {
 
   private static final int LIMIT = 20;
 
   private final ItemsSearcher repository;
-
-  @Inject
-  public MatchingItemsRest(final ItemsSearcher repository) {
-    this.repository = repository;
-  }
 
   @GET
   @Path("getMatchingItems")

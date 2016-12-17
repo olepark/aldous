@@ -15,7 +15,6 @@ public class DatabaseManagerRunner {
   private static final Database database = new DBProvider(config).get();
 
   public static void main(String[] args) throws Exception {
-    UsersDAO.create(database).tableManager().dropTable();
     createAll();
     viewAll();
   }
@@ -34,7 +33,7 @@ public class DatabaseManagerRunner {
 
   private static void viewAll() {
     DatabaseManager manager = DatabaseManager.of(config);
-    manager.viewTable("items");
+//    manager.viewTable("items");
     manager.viewTable("users");
     manager.viewTable("lists");
   }

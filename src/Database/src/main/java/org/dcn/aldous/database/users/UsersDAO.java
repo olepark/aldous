@@ -19,7 +19,7 @@ public class UsersDAO extends DAO<AldousUser> {
   }
 
   public Optional<AldousUser> getUserByCredentials(String username, String password) {
-    String where = String.format("username=%s AND password=%s", username, password);// encryptor.encrypt(password));
+    String where = String.format("username='%s' AND password='%s'", username, password);// encryptor.encrypt(password));
     return selectFirstWhere(where);
   }
 

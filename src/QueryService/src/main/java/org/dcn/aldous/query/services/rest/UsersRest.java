@@ -23,21 +23,12 @@ public class UsersRest {
 
   private final UsersDAO usersDAO;
 
-  @GET
+  @POST
   @Path("add")
-  @Headers("Content-Encoding: gzip")
-  public Integer addUser(@QueryParam("name") String name,
-                         @QueryParam("username") String username,
-                         @QueryParam("password") String password) {
+  public Integer addUser(@FormParam("name") String name,
+                         @FormParam("username") String username,
+                         @FormParam("password") String password) {
     return usersDAO.add(new AldousUser(null, name, newArrayList(), username, password));
-  }
-
-  @GET
-  @Path("get")
-  @Headers("Content-Encoding: gzip")
-  public AldousUser getUser(@QueryParam("userId") @NotNull Integer id) {
-    return usersDAO.getById(id)
-        .orElseThrow(() -> new IllegalStateException("User not found for id " + id));
   }
 
 }
